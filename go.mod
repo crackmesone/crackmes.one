@@ -1,4 +1,4 @@
-module github.com/sar5430/crackmes.one
+module github.com/xusheng6/crackmes.one
 
 go 1.15
 
@@ -13,7 +13,8 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/justinas/alice v1.2.0
 	github.com/kennygrant/sanitize v1.2.4
-	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+	go.mongodb.org/mongo-driver v1.12.0 // indirect
+	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.4.0 // indirect
