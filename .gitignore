@@ -4,3 +4,8 @@ static/crackme/*
 static/solution/*
 *.log
 tmp/*
+dump
+dump_backup
+old_server
+crackmes.one
+crackmes.json
