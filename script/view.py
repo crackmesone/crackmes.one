@@ -11,10 +11,10 @@ client = MongoClient('127.0.0.1')
 db = client.crackmesone
 
 if type_object == "crackme":
-	file_loc = "/home/crackmesone/go/src/github.com/5tanislas/crackmes.one/tmp/crackme/" + file_loc
+	file_loc = "/home/crackmesone/crackmes.one/tmp/crackme/" + file_loc
 	collection = db.crackme
 elif type_object == "solution":
-	file_loc = "/home/crackmesone/go/src/github.com/5tanislas/crackmes.one/tmp/solution/" + file_loc
+	file_loc = "/home/crackmesone/crackmes.one/tmp/solution/" + file_loc
 	collection = db.solution
 else:
 	print("[-] I don't understand the type")
