@@ -38,8 +38,8 @@ if type_object == "solution":
 
 call(["mv", file_loc, filename])
 print("[+] mv " + file_loc + " " + filename)
-call(["zip", "-j", "--password", "crackmes.one" , "/home/crackmesone/go/src/github.com/5tanislas/crackmes.one/static/" + type_object + "/" + hexid, filename])
-print("[+] zip -j --password crackmes.one /home/crackmesone/go/src/github.com/5tanislas/crackmes.one/static/" + type_object + "/" + hexid + " " + filename)
+call(["zip", "-j", "--password", "crackmes.one" , "/home/crackmesone/crackmes.one/static/" + type_object + "/" + hexid, filename])
+print("[+] zip -j --password crackmes.one /home/crackmesone/crackmes.one/static/" + type_object + "/" + hexid + " " + filename)
 call(["rm", filename])
 print("[+] rm " + filename)
 
