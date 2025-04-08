@@ -1,12 +1,12 @@
 package controller
 
 import (
-    "github.com/sar5430/crackmes.one/app/model"
+    "github.com/xusheng6/crackmes.one/app/model"
     "log"
     "net/http"
     "sort"
     //"app/shared/session"
-    "github.com/sar5430/crackmes.one/app/shared/view"
+    "github.com/xusheng6/crackmes.one/app/shared/view"
 
     "github.com/gorilla/context"
     "github.com/julienschmidt/httprouter"

@@ -11,7 +11,7 @@ import (
     "path/filepath"
     "strings"
     "sync"
-    "github.com/sar5430/crackmes.one/app/shared/session"
+    "github.com/xusheng6/crackmes.one/app/shared/session"
 )
 
 const authorizedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-@.+"

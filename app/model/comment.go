@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/sar5430/crackmes.one/app/shared/database"
+	"github.com/xusheng6/crackmes.one/app/shared/database"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
