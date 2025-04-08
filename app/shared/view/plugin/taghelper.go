@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"log"
 
-	"github.com/sar5430/crackmes.one/app/shared/view"
+	"github.com/xushneg6/crackmes.one/app/shared/view"
 )
 
 // TagHelper returns a template.FuncMap
