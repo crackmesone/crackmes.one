@@ -9,6 +9,7 @@ import (
     "github.com/xusheng6/crackmes.one/app/shared/session"
     "github.com/xusheng6/crackmes.one/app/shared/view"
     "github.com/josephspurrier/csrfbanana"
+    "strings"
 )
 
 // RegisterGET displays the register page
@@ -55,7 +56,7 @@ func RegisterPOST(w http.ResponseWriter, r *http.Request) {
 
     // Get form values
     name := r.FormValue("name")
-    email := r.FormValue("email")
+    email := strings.ToLower(r.FormValue("email"))
     password, errp := passhash.HashString(r.FormValue("password"))
 
     if (!view.AuthorizedCharsOnly(name) || !view.AuthorizedCharsOnly(email)){
