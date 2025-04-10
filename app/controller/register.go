@@ -9,7 +9,7 @@ import (
     "github.com/xushneg6/crackmes.one/app/shared/view"
     "log"
     "net/http"
-	"strings"
+    "strings"
 )
 
 // RegisterGET displays the register page
