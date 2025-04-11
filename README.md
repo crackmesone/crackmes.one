@@ -24,21 +24,7 @@ If you forked it, download it from yourself.
 cd go/src/github.com/xusheng6/crackmes.one/
 ```
 
-4. Modify the file app/route/route.go, uncomment
-
-```golang
-//return middleware(routes())
-```
-
-then comment
-
-```golang
-return http.HandlerFunc(redirectToHTTPS)
-```
-
-in `LoadHTTP()` function.
-
-5. Make a `config` directory, and download this config file into it, and edit it to your liking. (You might want to edit the "Domain" value under "Session")
+4. Make a `config` directory, and download this config file into it, and edit it to your liking. (You might want to edit the "Domain" value under "Session")
 
 ```sh
 mkdir config
@@ -47,6 +33,8 @@ mkdir config
 ```sh
 curl 'https://gist.githubusercontent.com/moex3/cb5225653a82dd1729525556e9175e92/raw/5fa39c308f09c1a1b44402305486bdc87fe1a61e/config.json' > config/config.json
 ```
+
+5. Modify the values of `Recaptcha` and `Session` in `config/config.json`, or the users would not be able to log in or post new crackmes/solutions/comments
 
 6. Make a `tmp/crackme` and a `tmp/solution` directory.
 
@@ -66,7 +54,7 @@ mkdir -p static/{crackme,solution}
 go build
 ```
 
-9. Install `python`, `zip` and `pymongo` if you want to run `validate.py`. (Also change the paths)
+9. Install `python`, `zip` and `pymongo` if you want to run `validate.py`. (Also change the paths in the Python scripts in `script`)
 
 10. Run it.
 
