@@ -139,6 +139,11 @@ func routes() *httprouter.Router {
 		New(acl.DisallowAnon).
 		ThenFunc(controller.UploadSolutionPOST)))
 
+	//Solution Rules
+	r.GET("/upload/rules", hr.Handler(alice.
+		New(acl.DisallowAnon).
+		ThenFunc(controller.SolutionRulesGET)))
+
 	// Comments
 	r.POST("/comment/:hexid", hr.Handler(alice.
 		New(acl.DisallowAnon).
