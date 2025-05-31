@@ -72,6 +72,7 @@
             {{if eq .AuthLevel "auth"}}		
             <a href="#modal-comment" class="btn active float-right" style="margin-top:-65px;">Post a comment</a>
             {{else}}
+            <p>You must be logged in to post a comment</p>
             {{end}}
             {{range $n := .comments}}
             <p><a href="/user/{{.Author}}">{{.Author}}</a> on {{.CreatedAt | PRETTYTIME}}: <span style="white-space: pre-line">{{.Content}}</span></p>
@@ -81,7 +82,7 @@
             {{if eq .AuthLevel "auth"}}
             <p>You want to share your writeup ? Please follow this <b><a href="/upload/solution/{{.hexid}}">link</a></b> and check the instructions !</p>
             {{else}}
-            <p>You must me logged to submit a solution</p>
+            <p>You must be logged in to submit a writeup</p>
             {{end}}
             <div class="columns">
                 {{range $n := .solutions}}
