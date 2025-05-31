@@ -63,7 +63,7 @@
                     <a onclick="changeTab1('solutions', 'comments')">Comments</a>
                 </li>
                 <li class="tab-item">
-                    <a onclick="changeTab1('comments', 'solutions')">Solutions</a>
+                    <a onclick="changeTab1('comments', 'solutions')">Writeups</a>
                 </li>
             </ul>
         </div>
@@ -79,7 +79,7 @@
         </div>
         <div class="column col-12" id="solutions" style="display:none">
             {{if eq .AuthLevel "auth"}}
-            <p>You want to share your solution ? Please follow this <b><a href="/upload/solution/{{.hexid}}">link</a></b> and check the instructions !</p>
+            <p>You want to share your writeup ? Please follow this <b><a href="/upload/solution/{{.hexid}}">link</a></b> and check the instructions !</p>
             {{else}}
             <p>You must me logged to submit a solution</p>
             {{end}}
