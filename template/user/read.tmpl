@@ -19,7 +19,7 @@
         </div>
         <div class="column col-4">
             <div class="column col-12 panel-background">
-                <p>Number of solutions: </p>
+                <p>Number of writeups: </p>
                 <h2 class="text-center"> {{.NbSolutions}}</h2><br>
             </div>
         </div>
@@ -37,7 +37,7 @@
                     <a onclick="changeTab1('crackmes', 'comments', 'solutions')">Crackmes</a>
                 </li>
                 <li class="tab-item">
-                    <a onclick="changeTab1('solutions', 'comments', 'crackmes')">Solutions</a>
+                    <a onclick="changeTab1('solutions', 'comments', 'crackmes')">Writeups</a>
                 </li>
                 <li class="tab-item">
                     <a onclick="changeTab1('comments', 'solutions', 'crackmes')">Comments</a>
@@ -58,7 +58,7 @@
                     <th style="width: 4%;">Quality</th>
                     <th style="width: 9%;">Platform</th>
                     <th style="width: 9%;">Date</th>
-                    <th style="width: 4%;">Solution</th>
+                    <th style="width: 4%;">Writeups</th>
                     <th style="width: 4%;">Comments</th>
                     </tr>
                 </thead>
@@ -83,7 +83,7 @@
 
 
         <div class="columns col-12" id="solutions" style="display: none">
-            <h3>Latest solutions</h3>
+            <h3>Latest writeups</h3>
             <table class="table table-striped">
                 <thead>
                     <tr style="text-align: center;">

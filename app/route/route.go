@@ -140,7 +140,7 @@ func routes() *httprouter.Router {
 		ThenFunc(controller.UploadSolutionPOST)))
 
 	//Solution Rules
-	r.GET("/upload/rules", hr.Handler(alice.
+	r.GET("/upload/writeuprules", hr.Handler(alice.
 		New(acl.DisallowAnon).
 		ThenFunc(controller.SolutionRulesGET)))
 
