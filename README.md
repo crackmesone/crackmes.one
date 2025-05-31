@@ -39,7 +39,7 @@ curl 'https://gist.githubusercontent.com/moex3/cb5225653a82dd1729525556e9175e92/
 6. Make a `tmp/crackme` and a `tmp/solution` directory.
 
 ```sh
-mkdir -p tmp/{crackme,solution}`
+mkdir -p tmp/{crackme,solution}
 ````
 
 7. Make a `static/crackme` and a `static/solution` directory.
