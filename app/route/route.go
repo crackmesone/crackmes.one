@@ -141,7 +141,7 @@ func routes() *httprouter.Router {
 
 	//Solution Rules
 	r.GET("/upload/writeuprules", hr.Handler(alice.
-		New(acl.DisallowAnon).
+		New().
 		ThenFunc(controller.SolutionRulesGET)))
 
 	// Comments
