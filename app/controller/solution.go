@@ -1,21 +1,22 @@
 package controller
 
 import (
-    "github.com/xusheng6/crackmes.one/app/model"
-    "github.com/xusheng6/crackmes.one/app/shared/recaptcha"
-    "github.com/xusheng6/crackmes.one/app/shared/session"
-    "github.com/xusheng6/crackmes.one/app/shared/view"
-    "fmt"
-    "io"
-    "io/ioutil"
-    "log"
-    "net/http"
-    "path"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"path"
 
-    "github.com/gorilla/context"
-    "github.com/josephspurrier/csrfbanana"
-    "github.com/julienschmidt/httprouter"
-    "github.com/kennygrant/sanitize"
+	"github.com/xusheng6/crackmes.one/app/model"
+	"github.com/xusheng6/crackmes.one/app/shared/recaptcha"
+	"github.com/xusheng6/crackmes.one/app/shared/session"
+	"github.com/xusheng6/crackmes.one/app/shared/view"
+
+	"github.com/gorilla/context"
+	"github.com/josephspurrier/csrfbanana"
+	"github.com/julienschmidt/httprouter"
+	"github.com/kennygrant/sanitize"
 )
 
 func UploadSolutionGET(w http.ResponseWriter, r *http.Request) {
@@ -78,17 +79,19 @@ func UploadSolutionPOST(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    data, err := ioutil.ReadAll(file)
 
-    if err != nil {
-        io.WriteString(w, err.Error())
-        return
-    }
-
-    if len(data) > 5000000 {
+    // check header size before reading the data into memory to avoid potential DOS attack 
+    if header.Size > 5000000 {
         sess.AddFlash(view.Flash{"This file is too large !", view.FlashError})
         sess.Save(r, w)
         UploadSolutionGET(w, r)
+        return
+    }
+
+    data, err := io.ReadAll(file)
+
+    if err != nil {
+        io.WriteString(w, err.Error())
         return
     }
 
@@ -100,8 +103,11 @@ func UploadSolutionPOST(w http.ResponseWriter, r *http.Request) {
     }
 
     filename := path.Join("./tmp/solution/" + username + "+++" + solution.HexId + "+++" + header.Filename)
-    err = ioutil.WriteFile(filename, data, 0777)
+    err = os.WriteFile(filename, data, 0777)
     if err != nil {
+        log.Println(err)
+        sess.AddFlash(view.Flash{"An error occurred on the server. Please try again later.", view.FlashError})
+        sess.Save(r, w)
         io.WriteString(w, err.Error())
         return
     }
@@ -119,15 +125,7 @@ func UploadSolutionPOST(w http.ResponseWriter, r *http.Request) {
         log.Println(err2)
     }
 
-    if err != nil {
-        log.Println(err)
-        sess.AddFlash(view.Flash{"An error occurred on the server. Please try again later.", view.FlashError})
-        sess.Save(r, w)
-    } else {
-        sess.AddFlash(view.Flash{"Solution uploaded! Should be available soon.", view.FlashSuccess})
-        sess.Save(r, w)
-        http.Redirect(w, r, "/user/"+username, http.StatusFound)
-        return
-    }
-
+    sess.AddFlash(view.Flash{"Solution uploaded! Should be available soon.", view.FlashSuccess})
+    sess.Save(r, w)
+    http.Redirect(w, r, "/user/"+username, http.StatusFound)
 }
