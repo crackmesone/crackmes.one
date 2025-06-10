@@ -1,22 +1,23 @@
 package controller
 
 import (
-    "github.com/xusheng6/crackmes.one/app/model"
-    "github.com/xusheng6/crackmes.one/app/shared/recaptcha"
-    "github.com/xusheng6/crackmes.one/app/shared/session"
-    "github.com/xusheng6/crackmes.one/app/shared/view"
-    "fmt"
-    "io"
-    "io/ioutil"
-    "log"
-    "net/http"
-    "path"
-    "strconv"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"path"
+	"strconv"
 
-    "github.com/gorilla/context"
-    "github.com/josephspurrier/csrfbanana"
-    "github.com/julienschmidt/httprouter"
-    "github.com/kennygrant/sanitize"
+	"github.com/xusheng6/crackmes.one/app/model"
+	"github.com/xusheng6/crackmes.one/app/shared/recaptcha"
+	"github.com/xusheng6/crackmes.one/app/shared/session"
+	"github.com/xusheng6/crackmes.one/app/shared/view"
+
+	"github.com/gorilla/context"
+	"github.com/josephspurrier/csrfbanana"
+	"github.com/julienschmidt/httprouter"
+	"github.com/kennygrant/sanitize"
 )
 
 func CrackMeGET(w http.ResponseWriter, r *http.Request) {
@@ -169,7 +170,7 @@ func UploadCrackMePOST(w http.ResponseWriter, r *http.Request) {
     sess := session.Instance(r)
 
     // Validate with required fields
-    if validate, missingField := view.Validate(r, []string{"name", "info", "lang", "difficulty", "platform"}); !validate {
+    if validate, missingField := view.Validate(r, []string{"name", "info", "lang", "difficulty", "platform", "arch"}); !validate {
         sess.AddFlash(view.Flash{"Field missing: " + missingField, view.FlashError})
         sess.Save(r, w)
         UploadCrackMeGET(w, r)
