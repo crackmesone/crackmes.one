@@ -1,5 +1,7 @@
-{{define "title"}}Crackme{{end}}
-{{define "head"}}{{end}}
+{{define "title"}}{{.username}}'s {{.name}}{{end}}
+{{define "head"}}
+<meta property="og:description" content="{{.info}}"/>
+{{end}}
 {{define "content"}}
 <script language="javascript" type="text/javascript">
     function changeTab1(id1, id2) {

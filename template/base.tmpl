@@ -4,13 +4,19 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://crackmes.one" />
+        <meta property="og:title" content="{{template "title" .}}"/>
+        <meta property="og:image" content="/static/favicons/crackmes-logo.png"/>
+        <meta name="theme-color" content="#9acc14">
+        <link rel="icon" type="image/x-icon" href="/static/favicons/crackmes-logo.png">
         <link rel="stylesheet" href="/static/css/spectre.min.css">
         <link rel="stylesheet" href="/static/css/spectre-exp.min.css">
         <link rel="stylesheet" href="/static/css/spectre-icons.min.css">
         <link rel="stylesheet" href="/static/css/custom.css"> 
         <script src='https://www.google.com/recaptcha/api.js'></script>
-        <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" integrity="sha384-3AB7yXWz4OeoZcPbieVW64vVXEwADiYyAEhwilzWsLw+9FgqpyjjStpPnpBO8o8S" crossorigin="anonymous">
-        --> <title>Crackmes</title>
+        <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" integrity="sha384-3AB7yXWz4OeoZcPbieVW64vVXEwADiYyAEhwilzWsLw+9FgqpyjjStpPnpBO8o8S" crossorigin="anonymous">--> 
+        <title>{{template "title" .}}</title>
         <style type="text/css">
         </style>
         {{template "head" .}}
