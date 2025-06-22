@@ -6,7 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/xusheng6/crackmes.one/app/model"
 	"github.com/xusheng6/crackmes.one/app/shared/recaptcha"
@@ -102,7 +103,25 @@ func UploadSolutionPOST(w http.ResponseWriter, r *http.Request) {
         log.Println(err)
     }
 
-    filename := path.Join("./tmp/solution/" + username + "+++" + solution.HexId + "+++" + header.Filename)
+    filename := header.Filename
+
+    // Sanitize the filename
+    filename = filepath.Base(filename)
+
+    // Remove unsafe characters (use a sanitization library or do custom filtering)
+    filename = sanitize.Name(filename)
+
+    // Join the path securely
+    safePath := filepath.Join("./tmp/solution", username+"+++"+solution.HexId+"+++"+filename)
+
+    // Validate that the final path is within the designated directory
+    if !strings.HasPrefix(filepath.Clean(safePath), "./tmp/solution/") {
+        log.Println("invalid or unsafe file path detected")
+        sess.AddFlash(view.Flash{"Invalid file path", view.FlashError})
+        sess.Save(r, w)
+        return
+    }
+
     err = os.WriteFile(filename, data, 0777)
     if err != nil {
         log.Println(err)

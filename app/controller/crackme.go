@@ -6,8 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"path"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/xusheng6/crackmes.one/app/model"
 	"github.com/xusheng6/crackmes.one/app/shared/recaptcha"
@@ -263,7 +264,25 @@ func UploadCrackMePOST(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    filename := path.Join("./tmp/crackme/" + username + "+++" + crackme.HexId + "+++" + header.Filename)
+    filename := header.Filename
+
+    // Sanitize the filename
+    filename = filepath.Base(filename)
+
+    // Remove unsafe characters (use a sanitization library or do custom filtering)
+    filename = sanitize.Name(filename)
+
+    // Join the path securely
+    safePath := filepath.Join("./tmp/crackme", username+"+++"+crackme.HexId+"+++"+filename)
+
+    // Validate that the final path is within the designated directory
+    if !strings.HasPrefix(filepath.Clean(safePath), "./tmp/crackme/") {
+        log.Println("invalid or unsafe file path detected")
+        sess.AddFlash(view.Flash{"Invalid file path", view.FlashError})
+        sess.Save(r, w)
+        return
+    }
+
     err = ioutil.WriteFile(filename, data, 0777)
     if err != nil {
         io.WriteString(w, err.Error())
