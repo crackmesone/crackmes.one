@@ -8,8 +8,10 @@ import (
     //"app/shared/session"
     "github.com/xusheng6/crackmes.one/app/shared/view"
 
+    "fmt"
     "github.com/gorilla/context"
     "github.com/julienschmidt/httprouter"
+    "github.com/xusheng6/crackmes.one/app/shared/session"
 )
 
 type By func(p1, p2 *model.User) bool
@@ -128,6 +130,14 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
         }
     }
 
+    // Determine if the user is viewing their own profile page
+    sess := session.Instance(r)
+    sessionUsername := ""
+    if sess.Values["name"] != nil {
+        sessionUsername = fmt.Sprintf("%s", sess.Values["name"])
+    }
+    viewingOwnPage := sessionUsername != "" && sessionUsername == name
+
     user.NbCrackmes = nbCrackmes
     user.NbSolutions = nbSolutions
     user.NbComments = nbComments
@@ -142,6 +152,7 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
     v.Vars["crackmes"] = crackmes
     v.Vars["solutions"] = solutionsext
     v.Vars["comments"] = comments
+    v.Vars["viewingOwnPage"] = viewingOwnPage
     v.Render(w)
 }
 

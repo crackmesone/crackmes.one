@@ -1,10 +1,13 @@
 package model
 
 import (
+	"context"
+	"errors"
 	"github.com/xusheng6/crackmes.one/app/shared/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
 // *****************************************************************************
@@ -130,4 +133,46 @@ func UserCreate(name, email, password string) error {
 	}
 
 	return standardizeError(err)
+}
+
+// UpdateUserPassword updates the password for a user identified by their username.
+// It finds the user by their username and updates the password field.
+func UpdateUserPassword(username string, hashedPassword string) error {
+	// Validate inputs
+	if username == "" {
+		return errors.New("username cannot be empty")
+	}
+	if hashedPassword == "" {
+		return errors.New("hashed password cannot be empty")
+	}
+
+	// Create a context with timeout for the query
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Get the users collection
+	collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("user")
+
+	// Create the filter by matching the username
+	filter := bson.M{"name": username}
+
+	// Define the update operation
+	update := bson.M{
+		"$set": bson.M{
+			"password": hashedPassword,
+		},
+	}
+
+	// Perform the update
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	// Check if any document was updated
+	if result.MatchedCount == 0 {
+		return errors.New("no user found with the provided username")
+	}
+
+	return nil
 }

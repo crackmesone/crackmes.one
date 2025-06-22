@@ -158,6 +158,15 @@ func routes() *httprouter.Router {
 	r.GET("/rss/crackme", hr.Handler(alice.
 		New().
 		ThenFunc(controller.RssCrackmesGET)))
+
+	// Change Password
+	r.GET("/change-password", hr.Handler(alice.
+		New(acl.DisallowAnon).
+		ThenFunc(controller.ResetPasswordWithCurrentGET)))
+	r.POST("/change-password", hr.Handler(alice.
+		New(acl.DisallowAnon).
+		ThenFunc(controller.ResetPasswordWithCurrentPOST)))
+
 	return r
 }
 

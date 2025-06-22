@@ -122,6 +122,13 @@
             </table>
         </div>
     </div><br/>
+
+    {{if .viewingOwnPage}}
+        <div class="text-center" style="margin-top: 20px;">
+            <a href="/change-password">Change Password</a>
+        </div>
+    {{end}}
+
 </div>
 
 {{template "footer" .}}
