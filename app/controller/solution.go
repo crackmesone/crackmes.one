@@ -112,17 +112,17 @@ func UploadSolutionPOST(w http.ResponseWriter, r *http.Request) {
     filename = sanitize.Name(filename)
 
     // Join the path securely
-    safePath := filepath.Join("./tmp/solution", username+"+++"+solution.HexId+"+++"+filename)
+    safePath := filepath.Join("tmp/solution", username+"+++"+solution.HexId+"+++"+filename)
 
     // Validate that the final path is within the designated directory
-    if !strings.HasPrefix(filepath.Clean(safePath), "./tmp/solution/") {
+    if !strings.HasPrefix(filepath.Clean(safePath), "tmp/solution/") {
         log.Println("invalid or unsafe file path detected")
         sess.AddFlash(view.Flash{"Invalid file path", view.FlashError})
         sess.Save(r, w)
         return
     }
 
-    err = os.WriteFile(filename, data, 0777)
+    err = os.WriteFile(safePath, data, 0666)
     if err != nil {
         log.Println(err)
         sess.AddFlash(view.Flash{"An error occurred on the server. Please try again later.", view.FlashError})
