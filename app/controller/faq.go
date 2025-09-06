@@ -3,7 +3,7 @@ package controller
 import (
     "net/http"
 
-    "github.com/xusheng6/crackmes.one/app/shared/view"
+    "github.com/crackmesone/crackmes.one/app/shared/view"
 )
 
 // AboutGET displays the About page

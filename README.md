@@ -13,7 +13,7 @@ The really famous guy [Bonclay](https://twitter.com/mpgn_x64) from my team [Quok
 2. Download the source code with go.
 
 ```sh
-go get github.com/xusheng6/crackmes.one
+go get github.com/crackmesone/crackmes.one
 ```
 
 If you forked it, download it from yourself.
@@ -21,7 +21,7 @@ If you forked it, download it from yourself.
 3.  go tho repository working dir (i.e. based of `go get`command)
 
 ```sh
-cd go/src/github.com/xusheng6/crackmes.one/
+cd go/src/github.com/crackmesone/crackmes.one/
 ```
 
 4. Make a `config` directory, and download this config file into it, and edit it to your liking. (You might want to edit the "Domain" value under "Session")

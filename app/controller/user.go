@@ -1,17 +1,17 @@
 package controller
 
 import (
-    "github.com/xusheng6/crackmes.one/app/model"
+    "github.com/crackmesone/crackmes.one/app/model"
     "log"
     "net/http"
     "sort"
     //"app/shared/session"
-    "github.com/xusheng6/crackmes.one/app/shared/view"
+    "github.com/crackmesone/crackmes.one/app/shared/view"
 
     "fmt"
     "github.com/gorilla/context"
     "github.com/julienschmidt/httprouter"
-    "github.com/xusheng6/crackmes.one/app/shared/session"
+    "github.com/crackmesone/crackmes.one/app/shared/session"
 )
 
 type By func(p1, p2 *model.User) bool

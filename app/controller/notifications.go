@@ -1,13 +1,13 @@
 package controller
 
 import (
-    "github.com/xusheng6/crackmes.one/app/model"
+    "github.com/crackmesone/crackmes.one/app/model"
     "log"
     "net/http"
     "time"
 
-    "github.com/xusheng6/crackmes.one/app/shared/session"
-    "github.com/xusheng6/crackmes.one/app/shared/view"
+    "github.com/crackmesone/crackmes.one/app/shared/session"
+    "github.com/crackmesone/crackmes.one/app/shared/view"
     "github.com/josephspurrier/csrfbanana"
 )
 

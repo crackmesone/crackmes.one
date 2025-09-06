@@ -3,7 +3,7 @@ package acl
 import (
 	"net/http"
 
-	"github.com/xusheng6/crackmes.one/app/shared/session"
+	"github.com/crackmesone/crackmes.one/app/shared/session"
 )
 
 // DisallowAuth does not allow authenticated users to access the page

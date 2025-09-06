@@ -1,4 +1,4 @@
-module github.com/xusheng6/crackmes.one
+module github.com/crackmesone/crackmes.one
 
 go 1.15
 

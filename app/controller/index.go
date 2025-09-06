@@ -3,8 +3,8 @@ package controller
 import (
     "log"
     "net/http"
-    "github.com/xusheng6/crackmes.one/app/shared/view"
-    "github.com/xusheng6/crackmes.one/app/model"
+    "github.com/crackmesone/crackmes.one/app/shared/view"
+    "github.com/crackmesone/crackmes.one/app/model"
 )
 
 // IndexGET displays the home page

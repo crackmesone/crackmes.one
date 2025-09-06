@@ -3,11 +3,11 @@ package controller
 import (
     "log"
     "net/http"
-    "github.com/xusheng6/crackmes.one/app/model"
-    "github.com/xusheng6/crackmes.one/app/shared/passhash"
-    "github.com/xusheng6/crackmes.one/app/shared/recaptcha"
-    "github.com/xusheng6/crackmes.one/app/shared/session"
-    "github.com/xusheng6/crackmes.one/app/shared/view"
+    "github.com/crackmesone/crackmes.one/app/model"
+    "github.com/crackmesone/crackmes.one/app/shared/passhash"
+    "github.com/crackmesone/crackmes.one/app/shared/recaptcha"
+    "github.com/crackmesone/crackmes.one/app/shared/session"
+    "github.com/crackmesone/crackmes.one/app/shared/view"
     "github.com/josephspurrier/csrfbanana"
     "strings"
 )

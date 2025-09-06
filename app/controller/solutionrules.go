@@ -1,7 +1,7 @@
 package controller
 
 import (
-    "github.com/xusheng6/crackmes.one/app/shared/view"
+    "github.com/crackmesone/crackmes.one/app/shared/view"
     "net/http"
 )
 
