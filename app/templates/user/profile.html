@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.name }} - Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h2>{{ user.name }}'s Profile</h2>
+    
+    <div class="profile-stats">
+        <div class="stat">
+            <span class="stat-number">{{ user.nb_crackmes }}</span>
+            <span class="stat-label">Crackmes</span>
+        </div>
+        
+        <div class="stat">
+            <span class="stat-number">{{ user.nb_solutions }}</span>
+            <span class="stat-label">Solutions</span>
+        </div>
+        
+        <div class="stat">
+            <span class="stat-number">{{ user.nb_comments }}</span>
+            <span class="stat-label">Comments</span>
+        </div>
+    </div>
+    
+    <div class="profile-content">
+        <h3>Recent Activity</h3>
+        <p>User activity will be implemented in a future phase.</p>
+    </div>
+</div>
+{% endblock %}

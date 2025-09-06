@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Home - crackmes.one{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to crackmes.one</h1>
+    <p>The ultimate platform for reverse engineering challenges</p>
+    
+    {% if session.user_id %}
+        <p>Welcome back, {{ session.username }}!</p>
+        <a href="{{ url_for('crackme.upload_crackme') }}" class="btn btn-primary">Upload a Crackme</a>
+    {% else %}
+        <p>Join our community of reverse engineers</p>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started</a>
+    {% endif %}
+</div>
+
+<div class="content">
+    <h2>Latest Crackmes</h2>
+    <p>Browse the latest reverse engineering challenges uploaded by our community.</p>
+    
+    <!-- TODO: Add latest crackmes list -->
+    <div class="placeholder">
+        <p>Crackme listings will be implemented in the next phase.</p>
+    </div>
+</div>
+{% endblock %}
