@@ -100,6 +100,13 @@ func CommentCreate(content, username, crackmehexid string) error {
 			Deleted:      false,
 		}
 		_, err = collection.InsertOne(database.Ctx, comment)
+		
+		// If comment creation is successful, increment the crackme's comment count
+		if err == nil {
+			// Import the crackme model functions - we need to be careful about circular imports
+			// Since we're in the same package, we can call CrackmeIncrementComments directly
+			err = CrackmeIncrementComments(crackmehexid)
+		}
 	} else {
 		err = ErrUnavailable
 	}

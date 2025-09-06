@@ -29,8 +29,8 @@ type Crackme struct {
 	Deleted     bool               `bson:"deleted"`
 	Difficulty  float64            `bson:"difficulty"`
 	Quality     float64            `bson:"quality"`
-	NbSolutions int                // Not present in the database! Just for rendering
-	NbComments  int                // Not present in the database! Just for rendering
+	NbSolutions int                `bson:"nb_solutions"`
+	NbComments  int                `bson:"nb_comments"`
 	Platform    string             `bson:"platform,omitempty"`
 }
 
@@ -84,6 +84,45 @@ func CrackmeSetFloat(hexid, champ string, nb float64) error {
 
 		// Validate the object id
 		_, err = collection.UpdateOne(database.Ctx, bson.M{"hexid": hexid}, bson.M{"$set": bson.M{champ: float64(nb)}})
+	} else {
+		err = ErrUnavailable
+	}
+	return err
+}
+
+func CrackmeIncrementComments(hexid string) error {
+	var err error
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
+
+		// Increment nb_comments by 1
+		_, err = collection.UpdateOne(database.Ctx, bson.M{"hexid": hexid}, bson.M{"$inc": bson.M{"nb_comments": 1}})
+	} else {
+		err = ErrUnavailable
+	}
+	return err
+}
+
+func CrackmeIncrementSolutions(hexid string) error {
+	var err error
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
+
+		// Increment nb_solutions by 1
+		_, err = collection.UpdateOne(database.Ctx, bson.M{"hexid": hexid}, bson.M{"$inc": bson.M{"nb_solutions": 1}})
+	} else {
+		err = ErrUnavailable
+	}
+	return err
+}
+
+func CrackmeSetCounts(hexid string, nbSolutions, nbComments int) error {
+	var err error
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
+
+		// Set both counts
+		_, err = collection.UpdateOne(database.Ctx, bson.M{"hexid": hexid}, bson.M{"$set": bson.M{"nb_solutions": nbSolutions, "nb_comments": nbComments}})
 	} else {
 		err = ErrUnavailable
 	}
@@ -157,6 +196,22 @@ func CrackmeByHexId(hexid string) (Crackme, error) {
 	return result, err
 }
 
+func CrackmeByObjectId(objectId primitive.ObjectID) (Crackme, error) {
+	var err error
+
+	var result Crackme
+	if database.CheckConnection() {
+		// Create a copy of mongo
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
+
+		// Validate the object id
+		err = collection.FindOne(database.Ctx, bson.M{"_id": objectId, "visible": true}).Decode(&result)
+	} else {
+		err = ErrUnavailable
+	}
+	return result, err
+}
+
 func CrackmesByUser(username string) ([]Crackme, error) {
 	var err error
 	var cursor *mongo.Cursor
@@ -200,17 +255,19 @@ func CrackmeCreate(name, info, username, lang, arch, platform string) error {
 		objId := primitive.NewObjectID()
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
 		crackme := &Crackme{
-			ObjectId:  objId,
-			HexId:     objId.Hex(),
-			Name:      name,
-			Info:      info,
-			Lang:      lang,
-			Arch:      arch,
-			Author:    username,
-			CreatedAt: time.Now(),
-			Visible:   false,
-			Deleted:   false,
-			Platform:  platform,
+			ObjectId:    objId,
+			HexId:       objId.Hex(),
+			Name:        name,
+			Info:        info,
+			Lang:        lang,
+			Arch:        arch,
+			Author:      username,
+			CreatedAt:   time.Now(),
+			Visible:     false,
+			Deleted:     false,
+			NbSolutions: 0,
+			NbComments:  0,
+			Platform:    platform,
 		}
 		_, err = collection.InsertOne(database.Ctx, crackme)
 	} else {
