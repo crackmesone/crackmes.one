@@ -40,7 +40,15 @@ def anonymous_required(f):
 @main_bp.route('/')
 def index():
     """Home page - equivalent to controller.IndexGET"""
-    return render_template('index.html')
+    from app.models.crackme import CrackmeModel
+    
+    # Get latest crackmes for homepage
+    latest_crackmes = CrackmeModel.get_visible_crackmes(limit=10)
+    total_crackmes = CrackmeModel.count_crackmes()
+    
+    return render_template('index.html', 
+                          crackmes=latest_crackmes,
+                          total_crackmes=total_crackmes)
 
 
 @main_bp.route('/static/<path:filename>')
@@ -144,19 +152,53 @@ def register_post():
 @user_bp.route('/user/<username>')
 def user_profile(username):
     """User profile page - equivalent to controller.UserGET"""
+    from app.models.crackme import CrackmeModel
+    from app.models.solution import SolutionModel
+    from app.models.comment import CommentModel
+    
     user = UserModel.get_by_name(username)
     if not user:
         flash('User not found', 'error')
         return redirect(url_for('main.index'))
     
-    return render_template('user/profile.html', user=user)
+    # Update user stats
+    user.nb_crackmes = CrackmeModel.count_by_user(username)
+    user.nb_solutions = SolutionModel.count_by_user(username)
+    user.nb_comments = CommentModel.count_by_user(username)
+    
+    # Get user's recent activity
+    user_crackmes = CrackmeModel.get_by_author(username, limit=5)
+    user_solutions = SolutionModel.get_by_author(username, limit=5)
+    user_comments = CommentModel.get_by_author(username, limit=5)
+    
+    return render_template('user/profile.html', 
+                          user=user,
+                          crackmes=user_crackmes,
+                          solutions=user_solutions,
+                          comments=user_comments)
 
 
-# Crackme routes (stubs for now)
+# Crackme routes
 @crackme_bp.route('/crackme/<hex_id>')
 def crackme_detail(hex_id):
     """Crackme detail page - equivalent to controller.CrackMeGET"""
-    return render_template('crackme/detail.html', hex_id=hex_id)
+    from app.models.crackme import CrackmeModel
+    from app.models.solution import SolutionModel
+    from app.models.comment import CommentModel
+    
+    crackme = CrackmeModel.get_by_hex_id(hex_id)
+    if not crackme or not crackme.visible:
+        flash('Crackme not found', 'error')
+        return redirect(url_for('main.index'))
+    
+    # Get solutions and comments
+    solutions = SolutionModel.get_by_crackme(hex_id)
+    comments = CommentModel.get_by_crackme(hex_id)
+    
+    return render_template('crackme/detail.html', 
+                          crackme=crackme, 
+                          solutions=solutions, 
+                          comments=comments)
 
 
 @crackme_bp.route('/upload/crackme', methods=['GET'])
@@ -170,9 +212,192 @@ def upload_crackme():
 @login_required
 def upload_crackme_post():
     """Upload crackme form submission - equivalent to controller.UploadCrackMePOST"""
-    # TODO: Implement file upload logic
-    flash('Crackme upload not yet implemented', 'info')
-    return redirect(url_for('crackme.upload_crackme'))
+    from app.models.crackme import Crackme
+    from werkzeug.utils import secure_filename
+    import os
+    
+    name = request.form.get('name', '').strip()
+    info = request.form.get('info', '').strip()
+    lang = request.form.get('lang', '').strip()
+    arch = request.form.get('arch', '').strip()
+    platform = request.form.get('platform', '').strip()
+    
+    # Validate input
+    if not all([name, info, lang, arch, platform]):
+        flash('All fields are required', 'error')
+        return render_template('crackme/upload.html')
+    
+    # Handle file upload
+    if 'file' not in request.files:
+        flash('File is required', 'error')
+        return render_template('crackme/upload.html')
+    
+    file = request.files['file']
+    if file.filename == '':
+        flash('No file selected', 'error')
+        return render_template('crackme/upload.html')
+    
+    if file:
+        try:
+            # Create crackme
+            crackme = Crackme(
+                name=name,
+                info=info,
+                lang=lang,
+                arch=arch,
+                platform=platform,
+                author=session['username']
+            )
+            crackme.save()
+            
+            # Save file temporarily for moderation
+            filename = secure_filename(file.filename)
+            temp_filename = f"{session['username']}+++{crackme.hex_id}+++{filename}"
+            temp_path = os.path.join('tmp', 'crackme', temp_filename)
+            
+            os.makedirs(os.path.dirname(temp_path), exist_ok=True)
+            file.save(temp_path)
+            
+            flash('Crackme uploaded successfully! It will be reviewed before being published.', 'success')
+            return redirect(url_for('main.index'))
+            
+        except Exception as e:
+            flash(f'Error uploading crackme: {str(e)}', 'error')
+            return render_template('crackme/upload.html')
+
+
+@crackme_bp.route('/lasts/<int:page>')
+def latest_crackmes(page=1):
+    """Latest crackmes page - equivalent to controller.LastCrackMesGET"""
+    from app.models.crackme import CrackmeModel
+    
+    per_page = 20
+    skip = (page - 1) * per_page
+    
+    crackmes = CrackmeModel.get_visible_crackmes(limit=per_page, skip=skip)
+    total_count = CrackmeModel.count_crackmes()
+    
+    has_next = (skip + per_page) < total_count
+    has_prev = page > 1
+    
+    return render_template('crackme/latest.html', 
+                          crackmes=crackmes,
+                          page=page,
+                          has_next=has_next,
+                          has_prev=has_prev)
+
+
+# Solution routes  
+@crackme_bp.route('/upload/solution/<crackme_hex_id>', methods=['GET'])
+@login_required
+def upload_solution(crackme_hex_id):
+    """Upload solution page - equivalent to controller.UploadSolutionGET"""
+    from app.models.crackme import CrackmeModel
+    
+    crackme = CrackmeModel.get_by_hex_id(crackme_hex_id)
+    if not crackme or not crackme.visible:
+        flash('Crackme not found', 'error')
+        return redirect(url_for('main.index'))
+    
+    return render_template('solution/upload.html', crackme=crackme)
+
+
+@crackme_bp.route('/upload/solution/<crackme_hex_id>', methods=['POST'])
+@login_required
+def upload_solution_post(crackme_hex_id):
+    """Upload solution form submission - equivalent to controller.UploadSolutionPOST"""
+    from app.models.crackme import CrackmeModel
+    from app.models.solution import Solution
+    from werkzeug.utils import secure_filename
+    import os
+    
+    crackme = CrackmeModel.get_by_hex_id(crackme_hex_id)
+    if not crackme or not crackme.visible:
+        flash('Crackme not found', 'error')
+        return redirect(url_for('main.index'))
+    
+    info = request.form.get('info', '').strip()
+    
+    # Validate input
+    if not info:
+        flash('Solution description is required', 'error')
+        return render_template('solution/upload.html', crackme=crackme)
+    
+    # Handle file upload
+    if 'file' not in request.files:
+        flash('File is required', 'error')
+        return render_template('solution/upload.html', crackme=crackme)
+    
+    file = request.files['file']
+    if file.filename == '':
+        flash('No file selected', 'error')
+        return render_template('solution/upload.html', crackme=crackme)
+    
+    if file:
+        try:
+            # Create solution
+            solution = Solution(
+                info=info,
+                author=session['username'],
+                crackme_id=crackme.object_id
+            )
+            solution.save()
+            
+            # Save file temporarily for moderation
+            filename = secure_filename(file.filename)
+            temp_filename = f"{session['username']}+++{solution.hex_id}+++{filename}"
+            temp_path = os.path.join('tmp', 'solution', temp_filename)
+            
+            os.makedirs(os.path.dirname(temp_path), exist_ok=True)
+            file.save(temp_path)
+            
+            flash('Solution uploaded successfully! It will be reviewed before being published.', 'success')
+            return redirect(url_for('crackme.crackme_detail', hex_id=crackme_hex_id))
+            
+        except Exception as e:
+            flash(f'Error uploading solution: {str(e)}', 'error')
+            return render_template('solution/upload.html', crackme=crackme)
+
+
+# Comment route
+@crackme_bp.route('/comment/<hex_id>', methods=['POST'])
+@login_required
+def leave_comment(hex_id):
+    """Leave comment - equivalent to controller.LeaveCommentPOST"""
+    from app.models.comment import CommentModel
+    
+    content = request.form.get('content', '').strip()
+    
+    if not content:
+        flash('Comment cannot be empty', 'error')
+        return redirect(url_for('crackme.crackme_detail', hex_id=hex_id))
+    
+    try:
+        CommentModel.create_comment(hex_id, session['username'], content)
+        flash('Comment added successfully!', 'success')
+    except Exception as e:
+        flash(f'Error adding comment: {str(e)}', 'error')
+    
+    return redirect(url_for('crackme.crackme_detail', hex_id=hex_id))
+
+
+# Search route
+@main_bp.route('/search', methods=['GET', 'POST'])
+def search():
+    """Search page - equivalent to controller.SearchGET/SearchPOST"""
+    if request.method == 'POST':
+        query = request.form.get('query', '').strip()
+        if query:
+            return redirect(url_for('main.search', q=query))
+    
+    query = request.args.get('q', '').strip()
+    crackmes = []
+    
+    if query:
+        from app.models.crackme import CrackmeModel
+        crackmes = CrackmeModel.search_crackmes(query)
+    
+    return render_template('search.html', query=query, crackmes=crackmes)
 
 
 # Error handlers

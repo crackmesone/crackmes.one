@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Crackme - crackmes.one{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>Upload a Crackme</h2>
+    
+    <form method="POST" enctype="multipart/form-data" class="upload-form">
+        <div class="form-group">
+            <label for="name">Crackme Name:</label>
+            <input type="text" id="name" name="name" required maxlength="100">
+        </div>
+        
+        <div class="form-group">
+            <label for="info">Description:</label>
+            <textarea id="info" name="info" required rows="5" maxlength="2000"></textarea>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="lang">Language:</label>
+                <select id="lang" name="lang" required>
+                    <option value="">Select Language</option>
+                    <option value="C">C</option>
+                    <option value="C++">C++</option>
+                    <option value="C#">C#</option>
+                    <option value="Java">Java</option>
+                    <option value="Python">Python</option>
+                    <option value="Assembly">Assembly</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="arch">Architecture:</label>
+                <select id="arch" name="arch" required>
+                    <option value="">Select Architecture</option>
+                    <option value="x86">x86</option>
+                    <option value="x64">x64</option>
+                    <option value="ARM">ARM</option>
+                    <option value="MIPS">MIPS</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="platform">Platform:</label>
+            <select id="platform" name="platform" required>
+                <option value="">Select Platform</option>
+                <option value="Windows">Windows</option>
+                <option value="Linux">Linux</option>
+                <option value="MacOS">MacOS</option>
+                <option value="Android">Android</option>
+                <option value="iOS">iOS</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="file">Crackme File:</label>
+            <input type="file" id="file" name="file" required>
+            <small>Maximum file size: 10MB</small>
+        </div>
+        
+        <div class="upload-info">
+            <h3>Upload Guidelines</h3>
+            <ul>
+                <li>Your crackme will be reviewed before being published</li>
+                <li>Make sure your crackme is original and functional</li>
+                <li>Provide clear instructions in the description</li>
+                <li>Ensure your file is safe and virus-free</li>
+            </ul>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Upload Crackme</button>
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -248,3 +248,272 @@ body {
     padding: 1rem;
     margin-top: auto;
 }
+
+/* Crackme grid and cards */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.view-all {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.view-all:hover {
+    text-decoration: underline;
+}
+
+.stats {
+    font-size: 1.1rem;
+    color: #666;
+    margin-top: 1rem;
+}
+
+.crackme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.crackme-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.crackme-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.crackme-card h3 {
+    margin-bottom: 1rem;
+}
+
+.crackme-card h3 a {
+    color: #333;
+    text-decoration: none;
+}
+
+.crackme-card h3 a:hover {
+    color: #007bff;
+}
+
+.crackme-info {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.crackme-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.crackme-meta span {
+    background-color: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    color: #666;
+}
+
+.crackme-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #007bff;
+}
+
+/* Upload forms */
+.upload-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.upload-form {
+    margin-bottom: 2rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    resize: vertical;
+}
+
+.form-group small {
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.upload-info {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+}
+
+.upload-info h3 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.upload-info ul {
+    margin-left: 1.5rem;
+}
+
+.upload-info li {
+    margin-bottom: 0.5rem;
+    color: #666;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    margin-left: 1rem;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+/* Crackme detail page */
+.crackme-detail {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.crackme-header {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.crackme-header h1 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.crackme-info {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.crackme-description {
+    margin-bottom: 2rem;
+}
+
+.crackme-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.detail-item {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.crackme-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-small:hover {
+    background-color: #0056b3;
+}
+
+/* Solutions and comments sections */
+.solutions-section, .comments-section {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.solution-item, .comment-item {
+    border-bottom: 1px solid #eee;
+    padding: 1.5rem 0;
+}
+
+.solution-item:last-child, .comment-item:last-child {
+    border-bottom: none;
+}
+
+.solution-meta, .comment-meta {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.solution-meta a, .comment-meta a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.solution-meta a:hover, .comment-meta a:hover {
+    text-decoration: underline;
+}
+
+.date {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.comment-form {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+}

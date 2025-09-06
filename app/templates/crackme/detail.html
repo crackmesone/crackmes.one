@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}{{ crackme.name }} - crackmes.one{% endblock %}
+
+{% block content %}
+<div class="crackme-detail">
+    <div class="crackme-header">
+        <h1>{{ crackme.name }}</h1>
+        <div class="crackme-meta">
+            <span class="author">by <a href="{{ url_for('user.user_profile', username=crackme.author) }}">{{ crackme.author }}</a></span>
+            <span class="date">{{ crackme.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        </div>
+    </div>
+    
+    <div class="crackme-info">
+        <div class="crackme-description">
+            <h3>Description</h3>
+            <p>{{ crackme.info }}</p>
+        </div>
+        
+        <div class="crackme-details">
+            <div class="detail-item">
+                <strong>Platform:</strong> {{ crackme.platform }}
+            </div>
+            <div class="detail-item">
+                <strong>Language:</strong> {{ crackme.lang }}
+            </div>
+            <div class="detail-item">
+                <strong>Architecture:</strong> {{ crackme.arch }}
+            </div>
+            <div class="detail-item">
+                <strong>Difficulty:</strong> 
+                {% if crackme.difficulty > 0 %}
+                    {{ "%.1f"|format(crackme.difficulty) }}/5.0
+                {% else %}
+                    Not rated yet
+                {% endif %}
+            </div>
+            <div class="detail-item">
+                <strong>Quality:</strong>
+                {% if crackme.quality > 0 %}
+                    {{ "%.1f"|format(crackme.quality) }}/5.0
+                {% else %}
+                    Not rated yet
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="crackme-actions">
+            <a href="/static/crackme/{{ crackme.hex_id }}" class="btn btn-primary" download>Download Crackme</a>
+            {% if session.user_id %}
+                <a href="{{ url_for('crackme.upload_solution', crackme_hex_id=crackme.hex_id) }}" class="btn btn-secondary">Submit Solution</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="solutions-section">
+        <h3>Solutions ({{ solutions|length }})</h3>
+        {% if solutions %}
+            <div class="solutions-list">
+                {% for solution in solutions %}
+                    <div class="solution-item">
+                        <div class="solution-meta">
+                            <strong><a href="{{ url_for('user.user_profile', username=solution.author) }}">{{ solution.author }}</a></strong>
+                            <span class="date">{{ solution.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                        <p>{{ solution.info }}</p>
+                        <a href="/static/solution/{{ solution.hex_id }}" class="btn btn-small" download>Download Solution</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No solutions submitted yet. Be the first!</p>
+        {% endif %}
+    </div>
+    
+    <div class="comments-section">
+        <h3>Comments ({{ comments|length }})</h3>
+        
+        {% if session.user_id %}
+            <form method="POST" action="{{ url_for('crackme.leave_comment', hex_id=crackme.hex_id) }}" class="comment-form">
+                <div class="form-group">
+                    <textarea name="content" placeholder="Leave a comment..." rows="3" maxlength="1000" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Post Comment</button>
+            </form>
+        {% endif %}
+        
+        {% if comments %}
+            <div class="comments-list">
+                {% for comment in comments %}
+                    <div class="comment-item">
+                        <div class="comment-meta">
+                            <strong><a href="{{ url_for('user.user_profile', username=comment.author) }}">{{ comment.author }}</a></strong>
+                            <span class="date">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                        <p>{{ comment.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No comments yet. Be the first to comment!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

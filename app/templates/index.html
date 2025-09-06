@@ -14,15 +14,40 @@
         <p>Join our community of reverse engineers</p>
         <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started</a>
     {% endif %}
+    
+    {% if total_crackmes %}
+        <p class="stats">{{ total_crackmes }} crackmes available</p>
+    {% endif %}
 </div>
 
 <div class="content">
-    <h2>Latest Crackmes</h2>
-    <p>Browse the latest reverse engineering challenges uploaded by our community.</p>
-    
-    <!-- TODO: Add latest crackmes list -->
-    <div class="placeholder">
-        <p>Crackme listings will be implemented in the next phase.</p>
+    <div class="section-header">
+        <h2>Latest Crackmes</h2>
+        <a href="{{ url_for('crackme.latest_crackmes', page=1) }}" class="view-all">View All</a>
     </div>
+    
+    {% if crackmes %}
+        <div class="crackme-grid">
+            {% for crackme in crackmes %}
+                <div class="crackme-card">
+                    <h3><a href="{{ url_for('crackme.crackme_detail', hex_id=crackme.hex_id) }}">{{ crackme.name }}</a></h3>
+                    <p class="crackme-info">{{ crackme.info[:100] }}{% if crackme.info|length > 100 %}...{% endif %}</p>
+                    <div class="crackme-meta">
+                        <span class="author">by {{ crackme.author }}</span>
+                        <span class="platform">{{ crackme.platform }}</span>
+                        <span class="lang">{{ crackme.lang }}</span>
+                    </div>
+                    <div class="crackme-stats">
+                        <span class="solutions">{{ crackme.nb_solutions }} solutions</span>
+                        <span class="comments">{{ crackme.nb_comments }} comments</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="placeholder">
+            <p>No crackmes available yet. Be the first to upload one!</p>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
