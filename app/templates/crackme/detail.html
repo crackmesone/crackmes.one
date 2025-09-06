@@ -30,18 +30,48 @@
             </div>
             <div class="detail-item">
                 <strong>Difficulty:</strong> 
-                {% if crackme.difficulty > 0 %}
-                    {{ "%.1f"|format(crackme.difficulty) }}/5.0
+                {% if avg_difficulty > 0 %}
+                    {{ "%.1f"|format(avg_difficulty) }}/5.0 ({{ difficulty_count }} ratings)
                 {% else %}
                     Not rated yet
+                {% endif %}
+                
+                {% if session.user_id and not user_rated_difficulty and session.username != crackme.author %}
+                    <div class="rating-form">
+                        <form method="POST" action="{{ url_for('api.rate_difficulty', hex_id=crackme.hex_id) }}" style="display: inline;">
+                            <select name="rating" onchange="this.form.submit()">
+                                <option value="">Rate Difficulty</option>
+                                <option value="1">1 - Very Easy</option>
+                                <option value="2">2 - Easy</option>
+                                <option value="3">3 - Medium</option>
+                                <option value="4">4 - Hard</option>
+                                <option value="5">5 - Very Hard</option>
+                            </select>
+                        </form>
+                    </div>
                 {% endif %}
             </div>
             <div class="detail-item">
                 <strong>Quality:</strong>
-                {% if crackme.quality > 0 %}
-                    {{ "%.1f"|format(crackme.quality) }}/5.0
+                {% if avg_quality > 0 %}
+                    {{ "%.1f"|format(avg_quality) }}/5.0 ({{ quality_count }} ratings)
                 {% else %}
                     Not rated yet
+                {% endif %}
+                
+                {% if session.user_id and not user_rated_quality and session.username != crackme.author %}
+                    <div class="rating-form">
+                        <form method="POST" action="{{ url_for('api.rate_quality', hex_id=crackme.hex_id) }}" style="display: inline;">
+                            <select name="rating" onchange="this.form.submit()">
+                                <option value="">Rate Quality</option>
+                                <option value="1">1 - Poor</option>
+                                <option value="2">2 - Fair</option>
+                                <option value="3">3 - Good</option>
+                                <option value="4">4 - Very Good</option>
+                                <option value="5">5 - Excellent</option>
+                            </select>
+                        </form>
+                    </div>
                 {% endif %}
             </div>
         </div>

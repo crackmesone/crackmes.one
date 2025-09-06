@@ -67,11 +67,15 @@ def create_app():
     Session(app)
     
     # Register blueprints
-    from app.routes import main_bp, auth_bp, crackme_bp, user_bp
+    from app.routes import main_bp, auth_bp, crackme_bp, user_bp, api_bp, inject_notification_count
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(crackme_bp)
     app.register_blueprint(user_bp)
+    app.register_blueprint(api_bp, url_prefix='/api')
+    
+    # Register context processor
+    app.context_processor(inject_notification_count)
     
     return app
     

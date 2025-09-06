@@ -14,6 +14,12 @@
                 {% if session.user_id %}
                     <a href="{{ url_for('user.user_profile', username=session.username) }}">{{ session.username }}</a>
                     <a href="{{ url_for('crackme.upload_crackme') }}">Upload</a>
+                    <a href="{{ url_for('main.notifications') }}">
+                        Notifications
+                        {% if notification_count > 0 %}
+                            <span class="notification-badge">{{ notification_count }}</span>
+                        {% endif %}
+                    </a>
                     <a href="{{ url_for('auth.logout') }}">Logout</a>
                 {% else %}
                     <a href="{{ url_for('auth.login') }}">Login</a>

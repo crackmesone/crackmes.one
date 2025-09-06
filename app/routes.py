@@ -12,6 +12,7 @@ main_bp = Blueprint('main', __name__)
 auth_bp = Blueprint('auth', __name__)
 crackme_bp = Blueprint('crackme', __name__)
 user_bp = Blueprint('user', __name__)
+api_bp = Blueprint('api', __name__)
 
 
 # Middleware equivalent decorators
@@ -34,6 +35,20 @@ def anonymous_required(f):
             return redirect(url_for('main.index'))
         return f(*args, **kwargs)
     return decorated_function
+
+
+def get_notification_count():
+    """Get notification count for current user"""
+    if 'user_id' in session:
+        from app.models.notification import NotificationModel
+        return NotificationModel.count_unseen_by_user(session['username'])
+    return 0
+
+
+# Context processor to make notification count available in all templates
+def inject_notification_count():
+    """Inject notification count into all templates"""
+    return dict(notification_count=get_notification_count())
 
 
 # Main routes
@@ -185,6 +200,7 @@ def crackme_detail(hex_id):
     from app.models.crackme import CrackmeModel
     from app.models.solution import SolutionModel
     from app.models.comment import CommentModel
+    from app.models.rating import RatingModel
     
     crackme = CrackmeModel.get_by_hex_id(hex_id)
     if not crackme or not crackme.visible:
@@ -195,10 +211,27 @@ def crackme_detail(hex_id):
     solutions = SolutionModel.get_by_crackme(hex_id)
     comments = CommentModel.get_by_crackme(hex_id)
     
+    # Get rating information
+    avg_difficulty, difficulty_count = RatingModel.get_average_difficulty(hex_id)
+    avg_quality, quality_count = RatingModel.get_average_quality(hex_id)
+    
+    # Check if current user has already rated
+    user_rated_difficulty = False
+    user_rated_quality = False
+    if 'user_id' in session:
+        user_rated_difficulty = RatingModel.is_already_rated_difficulty(session['username'], hex_id)
+        user_rated_quality = RatingModel.is_already_rated_quality(session['username'], hex_id)
+    
     return render_template('crackme/detail.html', 
                           crackme=crackme, 
                           solutions=solutions, 
-                          comments=comments)
+                          comments=comments,
+                          avg_difficulty=avg_difficulty,
+                          difficulty_count=difficulty_count,
+                          avg_quality=avg_quality,
+                          quality_count=quality_count,
+                          user_rated_difficulty=user_rated_difficulty,
+                          user_rated_quality=user_rated_quality)
 
 
 @crackme_bp.route('/upload/crackme', methods=['GET'])
@@ -365,6 +398,8 @@ def upload_solution_post(crackme_hex_id):
 def leave_comment(hex_id):
     """Leave comment - equivalent to controller.LeaveCommentPOST"""
     from app.models.comment import CommentModel
+    from app.models.crackme import CrackmeModel
+    from app.models.notification import NotificationModel
     
     content = request.form.get('content', '').strip()
     
@@ -373,7 +408,17 @@ def leave_comment(hex_id):
         return redirect(url_for('crackme.crackme_detail', hex_id=hex_id))
     
     try:
-        CommentModel.create_comment(hex_id, session['username'], content)
+        comment = CommentModel.create_comment(hex_id, session['username'], content)
+        
+        # Send notification to crackme author
+        crackme = CrackmeModel.get_by_hex_id(hex_id)
+        if crackme and crackme.author != session['username']:
+            NotificationModel.notify_new_comment(
+                crackme.author, 
+                crackme.name, 
+                session['username']
+            )
+        
         flash('Comment added successfully!', 'success')
     except Exception as e:
         flash(f'Error adding comment: {str(e)}', 'error')
@@ -398,6 +443,116 @@ def search():
         crackmes = CrackmeModel.search_crackmes(query)
     
     return render_template('search.html', query=query, crackmes=crackmes)
+
+
+# Notification routes
+@main_bp.route('/notifications')
+@login_required
+def notifications():
+    """Notifications page - equivalent to controller.NotificationsGET"""
+    from app.models.notification import NotificationModel
+    
+    notifications = NotificationModel.get_by_user(session['username'])
+    unseen_count = NotificationModel.count_unseen_by_user(session['username'])
+    
+    return render_template('notifications.html', 
+                          notifications=notifications,
+                          unseen_count=unseen_count)
+
+
+@main_bp.route('/notifications/delete', methods=['POST'])
+@login_required
+def delete_notification():
+    """Delete notification - equivalent to controller.NotificationsDeletePOST"""
+    from app.models.notification import NotificationModel
+    
+    notification_id = request.form.get('notification_id')
+    if notification_id:
+        NotificationModel.delete_notification(session['username'], notification_id)
+        flash('Notification deleted', 'success')
+    
+    return redirect(url_for('main.notifications'))
+
+
+@main_bp.route('/notifications/mark-seen', methods=['POST'])
+@login_required
+def mark_notifications_seen():
+    """Mark all notifications as seen"""
+    from app.models.notification import NotificationModel
+    
+    NotificationModel.mark_as_seen(session['username'])
+    return jsonify({'status': 'success'})
+
+
+# Rating routes (API)
+@api_bp.route('/rate-difficulty/<hex_id>', methods=['POST'])
+@login_required
+def rate_difficulty(hex_id):
+    """Rate crackme difficulty - equivalent to controller.RateDifficultyPOST"""
+    from app.models.rating import RatingModel
+    
+    try:
+        rating = int(request.form.get('rating', 0))
+        RatingModel.rate_difficulty(session['username'], hex_id, rating)
+        flash(f'Difficulty rating of {rating} submitted!', 'success')
+    except Exception as e:
+        flash(f'Error rating difficulty: {str(e)}', 'error')
+    
+    return redirect(url_for('crackme.crackme_detail', hex_id=hex_id))
+
+
+@api_bp.route('/rate-quality/<hex_id>', methods=['POST'])
+@login_required
+def rate_quality(hex_id):
+    """Rate crackme quality - equivalent to controller.RateQualityPOST"""
+    from app.models.rating import RatingModel
+    
+    try:
+        rating = int(request.form.get('rating', 0))
+        RatingModel.rate_quality(session['username'], hex_id, rating)
+        flash(f'Quality rating of {rating} submitted!', 'success')
+    except Exception as e:
+        flash(f'Error rating quality: {str(e)}', 'error')
+    
+    return redirect(url_for('crackme.crackme_detail', hex_id=hex_id))
+
+
+# RSS feed route
+@main_bp.route('/rss/crackme')
+def rss_crackmes():
+    """RSS feed for latest crackmes - equivalent to controller.RssCrackmesGET"""
+    from app.models.crackme import CrackmeModel
+    from flask import make_response
+    
+    crackmes = CrackmeModel.get_visible_crackmes(limit=20)
+    
+    # Create RSS XML
+    rss_xml = """<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+    <channel>
+        <title>crackmes.one - Latest Crackmes</title>
+        <link>http://localhost:8080</link>
+        <description>Latest reverse engineering challenges from crackmes.one</description>
+        <language>en-us</language>"""
+    
+    for crackme in crackmes:
+        rss_xml += f"""
+        <item>
+            <title>{crackme.name}</title>
+            <link>http://localhost:8080/crackme/{crackme.hex_id}</link>
+            <description>{crackme.info[:200]}...</description>
+            <author>{crackme.author}</author>
+            <pubDate>{crackme.created_at.strftime('%a, %d %b %Y %H:%M:%S GMT')}</pubDate>
+            <guid>http://localhost:8080/crackme/{crackme.hex_id}</guid>
+        </item>"""
+    
+    rss_xml += """
+    </channel>
+</rss>"""
+    
+    response = make_response(rss_xml)
+    response.headers['Content-Type'] = 'application/rss+xml'
+    return response
 
 
 # Error handlers
