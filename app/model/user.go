@@ -54,7 +54,7 @@ func UserByName(name string) (User, error) {
 
 	if database.CheckConnection() {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("user")
-		err = collection.FindOne(database.Ctx, bson.M{"name": primitive.Regex{Pattern: "^" + name + "$", Options: "i"}}).Decode(&result)
+		err = collection.FindOne(database.Ctx, bson.M{"name": name}).Decode(&result)
 	} else {
 		err = ErrUnavailable
 	}
@@ -69,7 +69,7 @@ func UserByMail(email string) (User, error) {
 
 	if database.CheckConnection() {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("user")
-		err = collection.FindOne(database.Ctx, bson.M{"email": primitive.Regex{Pattern: "^" + email + "$", Options: "i"}}).Decode(&result)
+		err = collection.FindOne(database.Ctx, bson.M{"email": email}).Decode(&result)
 	} else {
 		err = ErrUnavailable
 	}
