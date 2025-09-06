@@ -165,3 +165,37 @@ func SolutionCreate(info, username, crackmehexid string) error {
 
 	return standardizeError(err)
 }
+
+// SolutionApprove makes a solution visible and increments the crackme's solution count
+func SolutionApprove(solutionHexId string) error {
+	var err error
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("solution")
+		
+		// First, find the solution to get the crackme ID
+		var solution Solution
+		err = collection.FindOne(database.Ctx, bson.M{"hexid": solutionHexId}).Decode(&solution)
+		if err != nil {
+			return standardizeError(err)
+		}
+		
+		// Make the solution visible
+		_, err = collection.UpdateOne(database.Ctx, bson.M{"hexid": solutionHexId}, bson.M{"$set": bson.M{"visible": true}})
+		if err != nil {
+			return standardizeError(err)
+		}
+		
+		// Get the crackme to find its hexid
+		crackme, err := CrackmeByObjectId(solution.CrackmeId)
+		if err != nil {
+			return standardizeError(err)
+		}
+		
+		// Increment the crackme's solution count
+		err = CrackmeIncrementSolutions(crackme.HexId)
+	} else {
+		err = ErrUnavailable
+	}
+
+	return standardizeError(err)
+}
