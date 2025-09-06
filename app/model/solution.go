@@ -50,7 +50,7 @@ func CountSolutionsByUser(username string) (int, error) {
 	var nb int64
 	if database.CheckConnection() {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("solution")
-		nb, err = collection.CountDocuments(database.Ctx, bson.M{"author": primitive.Regex{Pattern: "^" + username + "$", Options: "i"}, "visible": true})
+		nb, err = collection.CountDocuments(database.Ctx, bson.M{"author": username, "visible": true})
 	} else {
 		err = ErrUnavailable
 	}
@@ -97,7 +97,7 @@ func SolutionsByUser(username string) ([]Solution, error) {
 		opts := options.Find().SetSort(bson.D{{"created_at", -1}}).SetLimit(50)
 
 		// Validate the object id
-		cursor, err = collection.Find(database.Ctx, bson.M{"author": primitive.Regex{Pattern: "^" + username + "$", Options: "i"}, "visible": true}, opts)
+		cursor, err = collection.Find(database.Ctx, bson.M{"author": username, "visible": true}, opts)
 		err = cursor.All(database.Ctx, &result)
 	} else {
 		err = ErrUnavailable
@@ -114,7 +114,7 @@ func SolutionsByUserAndCrackMe(username, crackmehexid string) (Solution, error) 
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("solution")
 
 		// Validate the object id
-		err = collection.FindOne(database.Ctx, bson.M{"crackmeid": crackme.ObjectId, "author": primitive.Regex{Pattern: "^" + username + "$", Options: "i"}}).Decode(&result)
+		err = collection.FindOne(database.Ctx, bson.M{"crackmeid": crackme.ObjectId, "author": username}).Decode(&result)
 	} else {
 		err = ErrUnavailable
 	}

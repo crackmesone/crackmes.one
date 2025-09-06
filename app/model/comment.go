@@ -31,7 +31,7 @@ func CountCommentsByUser(username string) (int, error) {
 	var nb int64
 	if database.CheckConnection() {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("comment")
-		nb, err = collection.CountDocuments(database.Ctx, bson.M{"author": primitive.Regex{Pattern: "^" + username + "$", Options: "i"}})
+		nb, err = collection.CountDocuments(database.Ctx, bson.M{"author": username})
 	} else {
 		err = ErrUnavailable
 	}
@@ -58,7 +58,7 @@ func CommentsByUser(name string) ([]Comment, error) {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("comment")
 		// Validate the object id
 		opts := options.Find().SetSort(bson.D{{"created_at", -1}}).SetLimit(50)
-		cursor, err = collection.Find(database.Ctx, bson.M{"author": primitive.Regex{Pattern: "^" + name + "$", Options: "i"}, "visible": true}, opts)
+		cursor, err = collection.Find(database.Ctx, bson.M{"author": name, "visible": true}, opts)
 		err = cursor.All(database.Ctx, &result)
 	} else {
 		err = ErrUnavailable

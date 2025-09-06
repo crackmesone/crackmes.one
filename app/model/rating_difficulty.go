@@ -30,7 +30,7 @@ func IsAlreadyRatedDifficulty(username, crackmehexid string) (bool, error) {
 	var nb int64
 	if database.CheckConnection() {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("rating_difficulty")
-		nb, err = collection.CountDocuments(database.Ctx, bson.M{"author": primitive.Regex{Pattern: "^" + username + "$", Options: "i"}, "crackmehexid": crackmehexid})
+		nb, err = collection.CountDocuments(database.Ctx, bson.M{"author": username, "crackmehexid": crackmehexid})
 	} else {
 		err = ErrUnavailable
 	}
@@ -61,7 +61,7 @@ func RatingDifficultySetRating(username, crackmehexid string, rating int) error 
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("rating_difficulty")
 
 		// Validate the object id
-		_, err = collection.UpdateOne(database.Ctx, bson.M{"crackmehexid": crackmehexid, "author": primitive.Regex{Pattern: "^" + username + "$", Options: "i"}}, bson.M{"$set": bson.M{"rating": rating}})
+		_, err = collection.UpdateOne(database.Ctx, bson.M{"crackmehexid": crackmehexid, "author": username}, bson.M{"$set": bson.M{"rating": rating}})
 	} else {
 		err = ErrUnavailable
 	}
