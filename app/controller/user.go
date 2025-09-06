@@ -56,42 +56,46 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    crackmes, err := model.CrackmesByUser(name)
+    // Use the actual username from the database for subsequent lookups
+    // This ensures case-insensitive lookup works while maintaining data consistency
+    actualUsername := user.Name
+
+    crackmes, err := model.CrackmesByUser(actualUsername)
     if err != nil {
         log.Println(err)
         Error500(w, r)
         return
     }
 
-    nbCrackmes, err := model.CountCrackmesByUser(name)
+    nbCrackmes, err := model.CountCrackmesByUser(actualUsername)
     if err != nil {
         log.Println(err)
         Error500(w, r)
         return
     }
 
-    nbSolutions, err := model.CountSolutionsByUser(name)
+    nbSolutions, err := model.CountSolutionsByUser(actualUsername)
     if err != nil {
         log.Println(err)
         Error500(w, r)
         return
     }
 
-    nbComments, err := model.CountCommentsByUser(name)
+    nbComments, err := model.CountCommentsByUser(actualUsername)
     if err != nil {
         log.Println(err)
         Error500(w, r)
         return
     }
 
-    solutions, err := model.SolutionsByUser(name)
+    solutions, err := model.SolutionsByUser(actualUsername)
     if err != nil {
         log.Println(err)
         Error500(w, r)
         return
     }
 
-    comments, err := model.CommentsByUser(name)
+    comments, err := model.CommentsByUser(actualUsername)
     if err != nil {
         log.Println(err)
         Error500(w, r)
@@ -136,7 +140,7 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
     if sess.Values["name"] != nil {
         sessionUsername = fmt.Sprintf("%s", sess.Values["name"])
     }
-    viewingOwnPage := sessionUsername != "" && sessionUsername == name
+    viewingOwnPage := sessionUsername != "" && sessionUsername == actualUsername
 
     user.NbCrackmes = nbCrackmes
     user.NbSolutions = nbSolutions
