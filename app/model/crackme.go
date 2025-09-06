@@ -52,7 +52,7 @@ func CountCrackmesByUser(username string) (int, error) {
 	var nb int64
 	if database.CheckConnection() {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
-		nb, err = collection.CountDocuments(database.Ctx, bson.M{"author": username, "visible": true})
+		nb, err = collection.CountDocuments(database.Ctx, bson.M{"author": primitive.Regex{Pattern: "^" + username + "$", Options: "i"}, "visible": true})
 	} else {
 		err = ErrUnavailable
 	}
@@ -167,7 +167,7 @@ func CrackmesByUser(username string) ([]Crackme, error) {
 		opts := options.Find().SetSort(bson.D{{"created_at", -1}})
 
 		// Validate the object id
-		cursor, err = collection.Find(database.Ctx, bson.M{"author": username, "visible": true}, opts)
+		cursor, err = collection.Find(database.Ctx, bson.M{"author": primitive.Regex{Pattern: "^" + username + "$", Options: "i"}, "visible": true}, opts)
 		err = cursor.All(database.Ctx, &result)
 	} else {
 		err = ErrUnavailable
@@ -185,7 +185,7 @@ func CrackmeByUserAndName(username, name string, visible bool) (Crackme, error) 
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
 
 		// Validate the object id
-		err = collection.FindOne(database.Ctx, bson.M{"name": name, "author": username, "visible": visible}).Decode(&result)
+		err = collection.FindOne(database.Ctx, bson.M{"name": name, "author": primitive.Regex{Pattern: "^" + username + "$", Options: "i"}, "visible": visible}).Decode(&result)
 	} else {
 		err = ErrUnavailable
 	}
