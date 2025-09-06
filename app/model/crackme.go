@@ -103,6 +103,21 @@ func CrackmeIncrementComments(hexid string) error {
 	return err
 }
 
+func CrackmeDecrementComments(hexid string) error {
+	var err error
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
+
+		// Decrement nb_comments by 1, but don't go below 0
+		_, err = collection.UpdateOne(database.Ctx, 
+			bson.M{"hexid": hexid, "nb_comments": bson.M{"$gt": 0}}, 
+			bson.M{"$inc": bson.M{"nb_comments": -1}})
+	} else {
+		err = ErrUnavailable
+	}
+	return err
+}
+
 func CrackmeIncrementSolutions(hexid string) error {
 	var err error
 	if database.CheckConnection() {
@@ -110,6 +125,21 @@ func CrackmeIncrementSolutions(hexid string) error {
 
 		// Increment nb_solutions by 1
 		_, err = collection.UpdateOne(database.Ctx, bson.M{"hexid": hexid}, bson.M{"$inc": bson.M{"nb_solutions": 1}})
+	} else {
+		err = ErrUnavailable
+	}
+	return err
+}
+
+func CrackmeDecrementSolutions(hexid string) error {
+	var err error
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
+
+		// Decrement nb_solutions by 1, but don't go below 0
+		_, err = collection.UpdateOne(database.Ctx, 
+			bson.M{"hexid": hexid, "nb_solutions": bson.M{"$gt": 0}}, 
+			bson.M{"$inc": bson.M{"nb_solutions": -1}})
 	} else {
 		err = ErrUnavailable
 	}
