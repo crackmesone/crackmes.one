@@ -8,3 +8,36 @@ crackmes.one
 go.sum
 .idea
 .vscode
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask session files
+flask_session/
+
+# Python distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/

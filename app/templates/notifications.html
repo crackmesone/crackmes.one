@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - crackmes.one{% endblock %}
+
+{% block content %}
+<div class="notifications-container">
+    <div class="notifications-header">
+        <h2>Notifications</h2>
+        {% if unseen_count > 0 %}
+            <form method="POST" action="{{ url_for('main.mark_notifications_seen') }}" style="display: inline;">
+                <button type="submit" class="btn btn-secondary">Mark All as Read</button>
+            </form>
+        {% endif %}
+    </div>
+    
+    {% if notifications %}
+        <div class="notifications-list">
+            {% for notification in notifications %}
+                <div class="notification-item {% if not notification.seen %}unread{% endif %}">
+                    <div class="notification-content">
+                        <p>{{ notification.text }}</p>
+                        <span class="notification-time">{{ notification.time.strftime('%Y-%m-%d %H:%M') }}</span>
+                    </div>
+                    <div class="notification-actions">
+                        <form method="POST" action="{{ url_for('main.delete_notification') }}" style="display: inline;">
+                            <input type="hidden" name="notification_id" value="{{ notification.hex_id }}">
+                            <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-notifications">
+            <p>No notifications yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
