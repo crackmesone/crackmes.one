@@ -23,7 +23,6 @@
     </head>
     <body>
         {{template "menu.tmpl" .}}
-        {{template "ctf-banner.tmpl" .}}
         {{range $fm := .flashes}}
         <h3>{{.Message}}</h3>
         {{end}}
