@@ -5,6 +5,7 @@ static/solution/*
 *.log
 tmp/*
 crackmes.one
+crackmesone
 go.sum
 .idea
 .vscode
