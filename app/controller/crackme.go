@@ -13,6 +13,7 @@ import (
 	"github.com/crackmesone/crackmes.one/app/model"
 	"github.com/crackmesone/crackmes.one/app/shared/recaptcha"
 	"github.com/crackmesone/crackmes.one/app/shared/session"
+	"github.com/crackmesone/crackmes.one/app/shared/storage"
 	"github.com/crackmesone/crackmes.one/app/shared/view"
 
 	"github.com/gorilla/context"
@@ -273,10 +274,10 @@ func UploadCrackMePOST(w http.ResponseWriter, r *http.Request) {
     filename = sanitize.Name(filename)
 
     // Join the path securely
-    safePath := filepath.Join("tmp/crackme", username+"+++"+crackme.HexId+"+++"+filename)
+    safePath := filepath.Join(storage.GetCrackmePath(), username+"+++"+crackme.HexId+"+++"+filename)
 
     // Validate that the final path is within the designated directory
-    if !strings.HasPrefix(filepath.Clean(safePath), "tmp/crackme/") {
+    if !strings.HasPrefix(filepath.Clean(safePath), storage.GetCrackmePath()+"/") {
         log.Println("invalid or unsafe file path detected")
         sess.AddFlash(view.Flash{"Invalid file path", view.FlashError})
         sess.Save(r, w)

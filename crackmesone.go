@@ -13,6 +13,7 @@ import (
 	"github.com/crackmesone/crackmes.one/app/shared/recaptcha"
 	"github.com/crackmesone/crackmes.one/app/shared/server"
 	"github.com/crackmesone/crackmes.one/app/shared/session"
+	"github.com/crackmesone/crackmes.one/app/shared/storage"
 	"github.com/crackmesone/crackmes.one/app/shared/view"
 	"github.com/crackmesone/crackmes.one/app/shared/view/plugin"
 )
@@ -70,6 +71,7 @@ type configuration struct {
 	Recaptcha recaptcha.Info  `json:"Recaptcha"`
 	Server    server.Server   `json:"Server"`
 	Session   session.Session `json:"Session"`
+	Storage   storage.Info    `json:"Storage"`
 	Template  view.Template   `json:"Template"`
 	View      view.View       `json:"View"`
 }
