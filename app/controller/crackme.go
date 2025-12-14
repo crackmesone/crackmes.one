@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -232,32 +233,20 @@ func UploadCrackMePOST(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    err = model.CrackmeCreate(name, info, username, lang, arch, platform)
-
-    if err != nil {
-        log.Println(err)
-        Error500(w, r)
+    // Check for duplicate pending submission (visible=false) with same name from same user
+    // This prevents orphaned duplicate entries when users retry failed uploads
+    existingCrackme, err := model.CrackmeByUserAndName(username, name, false)
+    if err == nil {
+        // Found existing pending submission with same name
+        sess.AddFlash(view.Flash{"You already have a pending crackme with this name. Please wait for review or choose a different name.", view.FlashError})
+        sess.Save(r, w)
+        UploadCrackMeGET(w, r)
         return
     }
 
-    crackme, err := model.CrackmeByUserAndName(username, name, false)
-
-    if err != nil {
-        log.Println(err)
-        Error500(w, r)
-        return
-    }
-
-    err = model.RatingDifficultyCreate(username, crackme.HexId, diffint)
-
-    if err != nil {
-        log.Println(err)
-        Error500(w, r)
-        return
-    }
-
-    err = model.RatingQualityCreate(username, crackme.HexId, 4)
-
+    // Prepare the crackme object with a pre-generated ID
+    // This allows us to create the file path before DB insertion
+    crackme, err := model.CrackmeCreatePrepare(name, info, username, lang, arch, platform)
     if err != nil {
         log.Println(err)
         Error500(w, r)
@@ -283,27 +272,56 @@ func UploadCrackMePOST(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    // Write file FIRST before creating database entry
+    // This prevents orphaned DB entries if file writing fails
     err = ioutil.WriteFile(safePath, data, 0666)
     if err != nil {
-        io.WriteString(w, err.Error())
+        log.Println("File write error:", err)
+        sess.AddFlash(view.Flash{"Failed to save file. Please try again.", view.FlashError})
+        sess.Save(r, w)
+        UploadCrackMeGET(w, r)
         return
     }
 
+    // Now insert the crackme into the database
+    err = model.CrackmeInsert(crackme)
+    if err != nil {
+        log.Println("Database insert error:", err)
+        // Cleanup: remove the file we just wrote
+        os.Remove(safePath)
+        Error500(w, r)
+        return
+    }
+
+    // Create ratings - if these fail, we should cleanup
+    err = model.RatingDifficultyCreate(username, crackme.HexId, diffint)
+    if err != nil {
+        log.Println("Rating difficulty error:", err)
+        // Cleanup: remove file and DB entry
+        os.Remove(safePath)
+        model.CrackmeDeleteByHexId(crackme.HexId)
+        Error500(w, r)
+        return
+    }
+
+    err = model.RatingQualityCreate(username, crackme.HexId, 4)
+    if err != nil {
+        log.Println("Rating quality error:", err)
+        // Cleanup: remove file, DB entry, and difficulty rating
+        os.Remove(safePath)
+        model.CrackmeDeleteByHexId(crackme.HexId)
+        model.RatingDifficultyDeleteByCrackme(crackme.HexId)
+        Error500(w, r)
+        return
+    }
+
+    // Send notification (failure here is not critical)
     notifErr := model.NotificationAdd(username, "Crackme '" + crackme.Name + "' added, waiting for approval!")
     if notifErr != nil {
-        // I don't think a notification failure warrants a 500 response.
         log.Println(notifErr)
     }
 
-    if err != nil {
-        log.Println(err)
-        sess.AddFlash(view.Flash{"An error occurred on the server. Please try again later.", view.FlashError})
-        sess.Save(r, w)
-    } else {
-        sess.AddFlash(view.Flash{"Crackme uploaded! Should be available soon.", view.FlashSuccess})
-        sess.Save(r, w)
-        http.Redirect(w, r, "/user/"+username, http.StatusFound)
-        return
-    }
-
+    sess.AddFlash(view.Flash{"Crackme uploaded! Should be available soon.", view.FlashSuccess})
+    sess.Save(r, w)
+    http.Redirect(w, r, "/user/"+username, http.StatusFound)
 }
