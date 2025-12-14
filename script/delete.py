@@ -38,12 +38,24 @@ if db_object is None:
 print("[+] found in database !")
 print(db_object)
 
+# Cascade delete related data for crackme
+if type_object == "crackme":
+	# Delete all solutions for this crackme
+	solution_count = db.solution.delete_many({"crackmeid": db_object["_id"]}).deleted_count
+	print(f"[+] deleted {solution_count} solutions")
+
+	# Delete all comments for this crackme
+	comment_count = db.comment.delete_many({"crackmehexid": hexid}).deleted_count
+	print(f"[+] deleted {comment_count} comments")
+
+	# Delete all ratings for this crackme
+	diff_count = db.rating_difficulty.delete_many({"crackmehexid": hexid}).deleted_count
+	qual_count = db.rating_quality.delete_many({"crackmehexid": hexid}).deleted_count
+	print(f"[+] deleted {diff_count} difficulty ratings and {qual_count} quality ratings")
+
+# Delete the crackme/solution entry itself
 collection.delete_one({'hexid': hexid})
 print("[+] file deleted in db")
-
-if type_object == "crackme":
-	rating_diff.delete_many({"crackmehexid": hexid})
-	rating_qual.delete_many({"crackmehexid": hexid})
 
 call(["rm", file_loc])
 print("[+] rm " + file_loc)
