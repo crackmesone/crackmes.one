@@ -235,7 +235,7 @@ func UploadCrackMePOST(w http.ResponseWriter, r *http.Request) {
 
     // Check for duplicate pending submission (visible=false) with same name from same user
     // This prevents orphaned duplicate entries when users retry failed uploads
-    existingCrackme, err := model.CrackmeByUserAndName(username, name, false)
+    _, err := model.CrackmeByUserAndName(username, name, false)
     if err == nil {
         // Found existing pending submission with same name
         sess.AddFlash(view.Flash{"You already have a pending crackme with this name. Please wait for review or choose a different name.", view.FlashError})
