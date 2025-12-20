@@ -144,6 +144,11 @@ func routes() *httprouter.Router {
 		New().
 		ThenFunc(controller.SolutionRulesGET)))
 
+	//Crackme Rules
+	r.GET("/upload/crackmerules", hr.Handler(alice.
+		New().
+		ThenFunc(controller.CrackmeRulesGET)))
+
 	// Comments
 	r.POST("/comment/:hexid", hr.Handler(alice.
 		New(acl.DisallowAnon).
