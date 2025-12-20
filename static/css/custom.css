@@ -235,4 +235,23 @@ tbody tr:first-child td .tile .tile-content:before {
 .empty {
     color: #9acc14;
 }
+
+/* FAQ ANCHOR LINKS */
+.anchor-link {
+    opacity: 0;
+    margin-left: 0.5rem;
+    font-size: 0.8em;
+    text-decoration: none;
+    color: #9acc14;
+    transition: opacity 0.3s ease;
+}
+
+h3:hover .anchor-link {
+    opacity: 1;
+}
+
+.anchor-link:hover {
+    opacity: 1 !important;
+    text-decoration: none;
+    color: #9acc14;
 }
