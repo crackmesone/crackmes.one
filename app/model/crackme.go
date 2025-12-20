@@ -219,3 +219,56 @@ func CrackmeCreate(name, info, username, lang, arch, platform string) error {
 
 	return standardizeError(err)
 }
+
+// CrackmeCreatePrepare creates a Crackme object with pre-generated ID but doesn't insert it
+// This allows the file to be created before database insertion
+func CrackmeCreatePrepare(name, info, username, lang, arch, platform string) (*Crackme, error) {
+	if !database.CheckConnection() {
+		return nil, ErrUnavailable
+	}
+
+	objId := primitive.NewObjectID()
+	crackme := &Crackme{
+		ObjectId:  objId,
+		HexId:     objId.Hex(),
+		Name:      name,
+		Info:      info,
+		Lang:      lang,
+		Arch:      arch,
+		Author:    username,
+		CreatedAt: time.Now(),
+		Visible:   false,
+		Deleted:   false,
+		Platform:  platform,
+	}
+
+	return crackme, nil
+}
+
+// CrackmeInsert inserts a prepared Crackme object into the database
+func CrackmeInsert(crackme *Crackme) error {
+	var err error
+
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
+		_, err = collection.InsertOne(database.Ctx, crackme)
+	} else {
+		err = ErrUnavailable
+	}
+
+	return standardizeError(err)
+}
+
+// CrackmeDeleteByHexId deletes a crackme by its hexid
+func CrackmeDeleteByHexId(hexid string) error {
+	var err error
+
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
+		_, err = collection.DeleteOne(database.Ctx, bson.M{"hexid": hexid})
+	} else {
+		err = ErrUnavailable
+	}
+
+	return standardizeError(err)
+}

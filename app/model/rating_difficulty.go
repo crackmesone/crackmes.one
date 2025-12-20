@@ -90,3 +90,17 @@ func RatingDifficultyCreate(username, crackmehexid string, rating int) error {
 
 	return standardizeError(err)
 }
+
+// RatingDifficultyDeleteByCrackme deletes all difficulty ratings for a crackme
+func RatingDifficultyDeleteByCrackme(crackmehexid string) error {
+	var err error
+
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("rating_difficulty")
+		_, err = collection.DeleteMany(database.Ctx, bson.M{"crackmehexid": crackmehexid})
+	} else {
+		err = ErrUnavailable
+	}
+
+	return standardizeError(err)
+}
