@@ -29,8 +29,8 @@ type Crackme struct {
 	Deleted     bool               `bson:"deleted"`
 	Difficulty  float64            `bson:"difficulty"`
 	Quality     float64            `bson:"quality"`
-	NbSolutions int                // Not present in the database! Just for rendering
-	NbComments  int                // Not present in the database! Just for rendering
+	NbSolutions int                `bson:"nbsolutions"`
+	NbComments  int                `bson:"nbcomments"`
 	Platform    string             `bson:"platform,omitempty"`
 }
 
@@ -124,6 +124,30 @@ func CrackmeUpdateQuality(crackmehexid string) error {
 	}
 
 	return CrackmeSetFloat(crackmehexid, "quality", quality)
+}
+
+// CrackmeIncrementComments increments the comment count for a crackme
+func CrackmeIncrementComments(crackmehexid string) error {
+	var err error
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
+		_, err = collection.UpdateOne(database.Ctx, bson.M{"hexid": crackmehexid}, bson.M{"$inc": bson.M{"nbcomments": 1}})
+	} else {
+		err = ErrUnavailable
+	}
+	return err
+}
+
+// CrackmeDecrementComments decrements the comment count for a crackme
+func CrackmeDecrementComments(crackmehexid string) error {
+	var err error
+	if database.CheckConnection() {
+		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("crackme")
+		_, err = collection.UpdateOne(database.Ctx, bson.M{"hexid": crackmehexid}, bson.M{"$inc": bson.M{"nbcomments": -1}})
+	} else {
+		err = ErrUnavailable
+	}
+	return err
 }
 
 func SearchCrackme(name, author, lang, arch, platform string, difficulty_min, difficulty_max, quality_min, quality_max int) ([]Crackme, error) {

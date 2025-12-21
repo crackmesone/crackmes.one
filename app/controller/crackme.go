@@ -93,23 +93,8 @@ func LastCrackMesGET(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    for i, c := range crackmes {
-        crackmes[i].NbComments, err = model.CountCommentsByCrackme(c.HexId)
-
-        if err != nil {
-            log.Println(err)
-            Error500(w, r)
-            return
-        }
-
-        crackmes[i].NbSolutions, err = model.CountSolutionsByCrackme(c.HexId)
-
-        if err != nil {
-            log.Println(err)
-            Error500(w, r)
-            return
-        }
-    }
+    // NbComments and NbSolutions for each crackme are stored in the database
+    // and are retrieved directly with the crackme documents (no need to count)
 
     v := view.New(r)
     v.Name = "crackme/lasts"
