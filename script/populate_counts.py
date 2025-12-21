@@ -108,21 +108,23 @@ def main():
                 print(f"  ❌ Solutions mismatch:")
                 print(f"     Current (stored): {current_nb_solutions}")
                 print(f"     Actual (counted): {actual_solutions}")
-                print(f"     Difference: {actual_solutions - current_nb_solutions:+d}")
+                diff = int(actual_solutions - current_nb_solutions)
+                print(f"     Difference: {diff:+d}")
 
             if current_nb_comments != actual_comments:
                 print(f"  ❌ Comments mismatch:")
                 print(f"     Current (stored): {current_nb_comments}")
                 print(f"     Actual (counted): {actual_comments}")
-                print(f"     Difference: {actual_comments - current_nb_comments:+d}")
+                diff = int(actual_comments - current_nb_comments)
+                print(f"     Difference: {diff:+d}")
 
             if args.apply:
                 try:
                     crackme_collection.update_one(
                         {'_id': object_id},
                         {'$set': {
-                            'nbsolutions': actual_solutions,
-                            'nbcomments': actual_comments
+                            'nbsolutions': int(actual_solutions),
+                            'nbcomments': int(actual_comments)
                         }}
                     )
                     print(f"  ✅ Database updated successfully")
