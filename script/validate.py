@@ -33,9 +33,6 @@ print(db_object)
 print("[+] file set to visible")
 collection.update_one({'hexid': hexid}, { '$set': {'visible': True}})
 
-if type_object == "solution":
-        db.crackme.update_one({'_id': db_object["crackmeid"]}, {'$inc': {"nbsolutions": 1}})
-
 call(["mv", file_loc, filename])
 print("[+] mv " + file_loc + " " + filename)
 call(["zip", "-j", "--password", "crackmes.one" , "/home/crackmesone/crackmes.one/static/" + type_object + "/" + hexid, filename])
