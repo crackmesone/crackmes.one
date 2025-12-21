@@ -63,6 +63,8 @@ func CrackMeGET(w http.ResponseWriter, r *http.Request) {
     v.Vars["platform"] = crackme.Platform
     v.Vars["solutions"] = solutions
     v.Vars["comments"] = comments
+    v.Vars["nbsolutions"] = crackme.NbSolutions
+    v.Vars["nbcomments"] = crackme.NbComments
     v.Vars["difficulty"] = fmt.Sprintf("%.1f", crackme.Difficulty)
     v.Vars["quality"] = fmt.Sprintf("%.1f", crackme.Quality)
     v.Vars["token"] = csrfbanana.Token(w, r, sess)
