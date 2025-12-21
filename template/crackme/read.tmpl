@@ -89,7 +89,7 @@
             <div class="columns">
                 {{range $n := .solutions}}
                 <div class="column col-9">
-                    <p>Solution by <a href="/user/{{.Author}}">{{.Author}}</a>:<br/><span style="white-space: pre-line">{{.Info}}</span></p>
+                    <p>Solution by <a href="/user/{{.Author}}">{{.Author}}</a> on {{.CreatedAt | PRETTYTIME}}:<br/><span style="white-space: pre-line">{{.Info}}</span></p>
                 </div>
                 <div class="column col-3">
                     <a href="/static/solution/{{.HexId}}.zip">Download</a>
