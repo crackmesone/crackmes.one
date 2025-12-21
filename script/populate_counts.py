@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
-Populate NbSolutions and NbComments counts for all crackmes.
+Verify and fix NbSolutions and NbComments counts for all crackmes.
 
-This script iterates through all crackmes and calculates the correct counts
-for solutions and comments, then updates the database.
+This script:
+1. Counts the actual number of visible solutions and comments for each crackme
+2. Compares with the stored nbsolutions and nbcomments values
+3. Shows differences (dry-run mode by default)
+4. Updates database when --apply flag is provided
 
 Usage:
-    python populate_counts.py                    # Dry-run mode (shows planned updates)
+    python populate_counts.py                    # Dry-run mode (shows differences)
     python populate_counts.py --apply            # Apply updates to database
     python populate_counts.py --uri mongodb://host:port --db dbname
 """
@@ -35,7 +38,7 @@ def count_comments_for_crackme(comments_collection, hex_id):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Populate solution and comment counts for all crackmes'
+        description='Verify and fix solution and comment counts for all crackmes'
     )
     parser.add_argument('--apply', action='store_true',
                         help='Apply changes to the database (default: dry-run mode)')
@@ -46,11 +49,13 @@ def main():
 
     args = parser.parse_args()
 
+    print("=" * 70)
     if args.apply:
-        print("Running in APPLY mode - changes will be written to the database")
+        print("MODE: APPLY - Changes WILL be written to the database")
     else:
-        print("Running in DRY-RUN mode - no changes will be made")
-        print("Use --apply flag to apply changes")
+        print("MODE: DRY-RUN - Only showing differences, no changes will be made")
+        print("      Use --apply flag to actually update the database")
+    print("=" * 70)
     print()
 
     # Connect to MongoDB
@@ -100,10 +105,16 @@ def main():
             print(f"[{i}] Crackme: {name} ({hexid})")
 
             if current_nb_solutions != actual_solutions:
-                print(f"  Solutions: {current_nb_solutions} -> {actual_solutions}")
+                print(f"  ❌ Solutions mismatch:")
+                print(f"     Current (stored): {current_nb_solutions}")
+                print(f"     Actual (counted): {actual_solutions}")
+                print(f"     Difference: {actual_solutions - current_nb_solutions:+d}")
 
             if current_nb_comments != actual_comments:
-                print(f"  Comments: {current_nb_comments} -> {actual_comments}")
+                print(f"  ❌ Comments mismatch:")
+                print(f"     Current (stored): {current_nb_comments}")
+                print(f"     Actual (counted): {actual_comments}")
+                print(f"     Difference: {actual_comments - current_nb_comments:+d}")
 
             if args.apply:
                 try:
@@ -114,27 +125,38 @@ def main():
                             'nbcomments': actual_comments
                         }}
                     )
-                    print("  ✅ Updated")
+                    print(f"  ✅ Database updated successfully")
                 except Exception as e:
-                    print(f"  ❌ Failed to update: {e}")
+                    print(f"  ❌ Database update failed: {e}")
+            else:
+                print(f"  ⚠️  Would update (use --apply to fix)")
 
             print()
 
     # Print summary
-    print("=" * 60)
-    print("Summary:")
-    print(f"  Total crackmes: {len(crackmes)}")
-    print(f"  Crackmes needing updates: {updated_count}")
-    print(f"  Total solutions: {total_solutions}")
-    print(f"  Total comments: {total_comments}")
+    print("=" * 70)
+    print("SUMMARY:")
+    print("=" * 70)
+    print(f"Total crackmes processed:     {len(crackmes)}")
+    print(f"Crackmes with mismatches:     {updated_count}")
+    print(f"Crackmes already correct:     {len(crackmes) - updated_count}")
+    print()
+    print(f"Total solutions (actual):     {total_solutions}")
+    print(f"Total comments (actual):      {total_comments}")
+    print()
 
-    if not args.apply and updated_count > 0:
-        print("\nTo apply these changes, run with --apply flag")
-    elif args.apply and updated_count > 0:
-        print("\n✅ Changes have been applied to the database")
-    elif updated_count == 0:
-        print("\n✅ All counts are already correct")
+    if updated_count == 0:
+        print("✅ All counts are already correct - no changes needed!")
+    elif args.apply:
+        print("✅ All mismatches have been fixed in the database")
+    else:
+        print(f"⚠️  Found {updated_count} crackme(s) with incorrect counts")
+        print(f"   Run with --apply flag to fix them:")
+        print(f"   python {sys.argv[0]} --apply")
 
+    print("=" * 70)
+
+    # Exit with error code if there are mismatches in dry-run mode
     if updated_count > 0 and not args.apply:
         sys.exit(1)
 
