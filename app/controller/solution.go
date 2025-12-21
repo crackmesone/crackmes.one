@@ -103,6 +103,10 @@ func UploadSolutionPOST(w http.ResponseWriter, r *http.Request) {
         log.Println(err)
     }
 
+    // Note: Solution count is NOT incremented here because solutions require
+    // approval before being counted. The count is updated when the solution
+    // is approved in the admin interface (separate repository).
+
     filename := header.Filename
 
     // Sanitize the filename

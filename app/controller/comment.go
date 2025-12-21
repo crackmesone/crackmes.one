@@ -52,6 +52,12 @@ func LeaveCommentPOST(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    // Increment the comment count for this crackme
+    err = model.CrackmeIncrementComments(crackmehexid)
+    if err != nil {
+        log.Println("Failed to increment comment count:", err)
+    }
+
     crackme, err := model.CrackmeByHexId(crackmehexid)
     if err == nil && crackme.Author != username {
         err = model.NotificationAdd(crackme.Author, "New comment on your crackme '" +
