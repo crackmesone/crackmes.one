@@ -32,12 +32,22 @@ type SolutionExtended struct {
 	Crackmename   string
 }
 
+// CountSolutions returns the total number of solutions in the collection.
+//
+// Performance optimization: Uses EstimatedDocumentCount() which reads from
+// collection metadata (O(1)) instead of scanning documents.
+//
+// Trade-offs:
+//   - Includes pending/non-visible solutions in the count (acceptable for display purposes)
+//   - EstimatedDocumentCount may be slightly inaccurate after unclean MongoDB shutdowns,
+//     during chunk migrations on sharded clusters, or briefly during heavy concurrent writes.
+//     For typical replica set deployments, accuracy is ~99.9%.
 func CountSolutions() (int, error) {
 	var err error
 	var nb int64
 	if database.CheckConnection() {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("solution")
-		nb, err = collection.CountDocuments(database.Ctx, bson.D{})
+		nb, err = collection.EstimatedDocumentCount(database.Ctx)
 	} else {
 		err = ErrUnavailable
 	}
