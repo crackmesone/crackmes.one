@@ -65,9 +65,12 @@ func RateDifficultyPOST(w http.ResponseWriter, r *http.Request) {
         }
     }
 
+    // Recalculate and update the difficulty rating for this crackme
+    err = model.CrackmeUpdateDifficulty(crackmehexid)
     if err != nil {
         log.Println(err)
         Error500(w, r)
+        return
     }
 
     sess.AddFlash(view.Flash{"Rated!", view.FlashSuccess})

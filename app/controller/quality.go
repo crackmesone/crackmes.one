@@ -53,18 +53,23 @@ func RateQualityPOST(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             log.Println(err)
             Error500(w, r)
+            return
         }
     } else {
         err = model.RatingQualityCreate(username, crackmehexid, ratingint)
         if err != nil {
             log.Println(err)
             Error500(w, r)
+            return
         }
     }
 
+    // Recalculate and update the quality rating for this crackme
+    err = model.CrackmeUpdateQuality(crackmehexid)
     if err != nil {
         log.Println(err)
         Error500(w, r)
+        return
     }
 
     sess.AddFlash(view.Flash{"Rated!", view.FlashSuccess})

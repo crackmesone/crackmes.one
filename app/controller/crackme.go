@@ -27,8 +27,6 @@ func CrackMeGET(w http.ResponseWriter, r *http.Request) {
     sess := session.Instance(r)
     var params httprouter.Params
 
-    var difficulty, quality float64
-
     params = context.Get(r, "params").(httprouter.Params)
     hexid := params.ByName("hexid")
 
@@ -38,34 +36,6 @@ func CrackMeGET(w http.ResponseWriter, r *http.Request) {
         Error500(w, r)
         return
     }
-
-    difficulties, err := model.RatingDifficultyByCrackme(hexid)
-    if err != nil {
-        log.Println(err)
-        Error500(w, r)
-        return
-    }
-
-    for _, d := range difficulties {
-        difficulty += float64(d.Rating)
-    }
-    difficulty /= float64(len(difficulties))
-
-    model.CrackmeSetFloat(hexid, "difficulty", difficulty)
-
-    qualities, err := model.RatingQualityByCrackme(hexid)
-    if err != nil {
-        log.Println(err)
-        Error500(w, r)
-        return
-    }
-
-    for _, q := range qualities {
-        quality += float64(q.Rating)
-    }
-    quality /= float64(len(qualities))
-
-    model.CrackmeSetFloat(hexid, "quality", quality)
 
     solutions, err := model.SolutionsByCrackme(crackme.ObjectId)
     if err != nil {
@@ -93,8 +63,8 @@ func CrackMeGET(w http.ResponseWriter, r *http.Request) {
     v.Vars["platform"] = crackme.Platform
     v.Vars["solutions"] = solutions
     v.Vars["comments"] = comments
-    v.Vars["difficulty"] = fmt.Sprintf("%.1f", difficulty)
-    v.Vars["quality"] = fmt.Sprintf("%.1f", quality)
+    v.Vars["difficulty"] = fmt.Sprintf("%.1f", crackme.Difficulty)
+    v.Vars["quality"] = fmt.Sprintf("%.1f", crackme.Quality)
     v.Vars["token"] = csrfbanana.Token(w, r, sess)
     v.Render(w)
     sess.Save(r, w)
@@ -313,6 +283,19 @@ func UploadCrackMePOST(w http.ResponseWriter, r *http.Request) {
         model.RatingDifficultyDeleteByCrackme(crackme.HexId)
         Error500(w, r)
         return
+    }
+
+    // Update the calculated ratings for this crackme
+    err = model.CrackmeUpdateDifficulty(crackme.HexId)
+    if err != nil {
+        log.Println("Update difficulty error:", err)
+        // Non-critical, continue
+    }
+
+    err = model.CrackmeUpdateQuality(crackme.HexId)
+    if err != nil {
+        log.Println("Update quality error:", err)
+        // Non-critical, continue
     }
 
     // Send notification (failure here is not critical)

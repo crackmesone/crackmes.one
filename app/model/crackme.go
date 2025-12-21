@@ -90,6 +90,42 @@ func CrackmeSetFloat(hexid, champ string, nb float64) error {
 	return err
 }
 
+// CrackmeUpdateDifficulty recalculates and updates the difficulty rating for a crackme
+func CrackmeUpdateDifficulty(crackmehexid string) error {
+	difficulties, err := RatingDifficultyByCrackme(crackmehexid)
+	if err != nil {
+		return err
+	}
+
+	var difficulty float64
+	if len(difficulties) > 0 {
+		for _, d := range difficulties {
+			difficulty += float64(d.Rating)
+		}
+		difficulty /= float64(len(difficulties))
+	}
+
+	return CrackmeSetFloat(crackmehexid, "difficulty", difficulty)
+}
+
+// CrackmeUpdateQuality recalculates and updates the quality rating for a crackme
+func CrackmeUpdateQuality(crackmehexid string) error {
+	qualities, err := RatingQualityByCrackme(crackmehexid)
+	if err != nil {
+		return err
+	}
+
+	var quality float64
+	if len(qualities) > 0 {
+		for _, q := range qualities {
+			quality += float64(q.Rating)
+		}
+		quality /= float64(len(qualities))
+	}
+
+	return CrackmeSetFloat(crackmehexid, "quality", quality)
+}
+
 func SearchCrackme(name, author, lang, arch, platform string, difficulty_min, difficulty_max, quality_min, quality_max int) ([]Crackme, error) {
 	var err error
 	var result []Crackme
