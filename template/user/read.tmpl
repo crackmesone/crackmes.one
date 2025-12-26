@@ -160,7 +160,7 @@
                 <div class="content">
                     <form action="/user/about" method="post">
                     <textarea name="about" id="about" placeholder="Tell others about yourself"
-                                style="width: 100%;" rows="6">{{.about}}</textarea>
+                                style="width: 100%;" rows="6" maxlength="500">{{.about}}</textarea>
                     <div class="text-right">
                         <input type="hidden" id="token" name="token" value="{{.token}}">
                         <input type="submit" class="btn active" value="Save">

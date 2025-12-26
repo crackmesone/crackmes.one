@@ -209,10 +209,6 @@ func UpdateAboutPOST(w http.ResponseWriter, r *http.Request) {
 	about := r.FormValue("about")
 	about = sanitize.HTML(about)
 
-	if len(about) > model.AboutMax {
-		about = about[:model.AboutMax]
-	}
-
 	if err := model.UpdateUserAbout(username, about); err != nil {
 		log.Println("UpdateUserAbout:", err)
 		sess.AddFlash(view.Flash{"Error saving about me", view.FlashError})
@@ -221,7 +217,7 @@ func UpdateAboutPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sess.AddFlash(view.Flash{"about me updated.", view.FlashSuccess})
+	sess.AddFlash(view.Flash{"About me updated.", view.FlashSuccess})
 	sess.Save(r, w)
 	http.Redirect(w, r, "/user/"+username, http.StatusFound)
 }
