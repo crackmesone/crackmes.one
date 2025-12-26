@@ -8,8 +8,25 @@
         document.getElementById(id1).style.display = 'block';
     }
 </script>
-<div class="container grid-lg wrapper">
-    <h3><a href="">{{.username}}</a>'s profile</h3>
+    <div class="container grid-lg wrapper">
+        <h3><a href="">{{.username}}</a>'s profile</h3>
+
+    <div class="columns col-12 ">
+        <div class="column col-12">
+            <div class="column col-12 panel-background">
+                <p>About me:</p>
+                {{if .about}}
+                <p><span style="white-space: pre-line">{{.about}}</span></p>
+                {{else}}
+                <p class="text-gray">No about info yet.</p>
+                {{end}}
+                {{if .viewingOwnPage}}
+                <a href="#modal-about" class="btn active" style="margin-bottom: 0.5rem">Edit About me</a>
+                {{end}}
+            </div>
+        </div>
+    </div>
+    <br>
     <div class="columns col-12 ">
         <div class="column col-4">
             <div class="column col-12 panel-background">
@@ -63,7 +80,7 @@
                     </tr>
                 </thead>
                 <tbody id="content-list">
-                    {{range $n := .crackmes}}		
+                    {{range $n := .crackmes}}
                     <tr class="text-center">
                         <td> <a href="/crackme/{{.HexId}}">{{.Name}}</a></td>
                         <td> <a href="/user/{{.Author}}">{{.Author}}</a> </td>
@@ -133,6 +150,28 @@
         </div>
     {{end}}
 
+    <div class="modal" id="modal-about">
+        <a href="#close" class="modal-overlay" aria-label="Close"></a>
+        <div class="modal-container">
+            <div class="modal-header">
+            <a href="#close" class="btn btn-clear float-right" aria-label="Close"></a>
+            <div class="modal-title h5">Edit About me</div>
+            </div>
+            <div class="modal-body">
+            <div class="content">
+                <form action="/user/about" method="post">
+                <textarea name="about" id="about" placeholder="Tell others about yourself"
+                            style="width: 100%;" rows="6">{{.about}}</textarea>
+                <div class="text-right">
+                    <input type="hidden" id="token" name="token" value="{{.token}}">
+                    <input type="submit" class="btn active" value="Save">
+                </div>
+                <p class="text-gray" style="margin-top: 8px;">Max 500 characters</p>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {{template "footer" .}}

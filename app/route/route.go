@@ -82,6 +82,10 @@ func routes() *httprouter.Router {
 	  New().
 	  ThenFunc(controller.UsersGET)))*/
 
+	r.POST("/user/about", hr.Handler(alice.
+			New(acl.DisallowAnon).
+			ThenFunc(controller.UpdateAboutPOST)))
+
 	// Notifications
 	r.GET("/notifications", hr.Handler(alice.
 		New(acl.DisallowAnon).

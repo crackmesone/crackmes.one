@@ -7,6 +7,8 @@ import (
     "sort"
     //"app/shared/session"
     "github.com/crackmesone/crackmes.one/app/shared/view"
+    "github.com/josephspurrier/csrfbanana"
+    "github.com/kennygrant/sanitize"
 
     "fmt"
     "github.com/gorilla/context"
@@ -144,7 +146,11 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
     v.Vars["solutions"] = solutionsext
     v.Vars["comments"] = comments
     v.Vars["viewingOwnPage"] = viewingOwnPage
-    v.Render(w)
+    v.Vars["about"] = user.About
+	v.Vars["token"] = csrfbanana.Token(w, r, sess)
+
+	v.Render(w)
+	sess.Save(r, w)
 }
 
 func UsersGET(w http.ResponseWriter, r *http.Request) {
@@ -190,4 +196,32 @@ func UsersGET(w http.ResponseWriter, r *http.Request) {
     v.Name = "users/read"
     v.Vars["users"] = users
     v.Render(w)
+}
+
+func UpdateAboutPOST(w http.ResponseWriter, r *http.Request) {
+	sess := session.Instance(r)
+	if sess.Values["name"] == nil {
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+	username := fmt.Sprintf("%s", sess.Values["name"])
+
+	about := r.FormValue("about")
+	about = sanitize.HTML(about)
+
+	if len(about) > model.AboutMax {
+		about = about[:model.AboutMax]
+	}
+
+	if err := model.UpdateUserAbout(username, about); err != nil {
+		log.Println("UpdateUserAbout:", err)
+		sess.AddFlash(view.Flash{"Error saving about me", view.FlashError})
+		sess.Save(r, w)
+		http.Redirect(w, r, "/user/"+username, http.StatusFound)
+		return
+	}
+
+	sess.AddFlash(view.Flash{"about me updated.", view.FlashSuccess})
+	sess.Save(r, w)
+	http.Redirect(w, r, "/user/"+username, http.StatusFound)
 }

@@ -23,6 +23,7 @@ type User struct {
 	Password    string             `bson:"password,omitempty"`
 	Visible     bool               `bson:"visible"`
 	Deleted     bool               `bson:"deleted"`
+	About       string             `bson:"about,omitempty"`
 	NbCrackmes  int
 	NbSolutions int
 	NbComments  int
@@ -183,5 +184,33 @@ func UpdateUserPassword(username string, hashedPassword string) error {
 		return errors.New("no user found with the provided username")
 	}
 
+	return nil
+}
+
+const AboutMax = 500 // how many characters can be in the About Me
+// UpdateUserAbout updates the about me field of a user
+func UpdateUserAbout(username, about string) error {
+	if username == "" {
+		return errors.New("username cannot be empty")
+	}
+	if len(about) > AboutMax {
+		about = about[:AboutMax]
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("user")
+
+	filter := bson.M{"name": username}
+	update := bson.M{"$set": bson.M{"about": about}}
+
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return errors.New("no user found with the provided username")
+	}
 	return nil
 }
