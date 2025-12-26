@@ -148,30 +148,30 @@
         <div class="text-center" style="margin-top: 20px;">
             <a href="/change-password">Change Password</a>
         </div>
-    {{end}}
 
-    <div class="modal" id="modal-about">
-        <a href="#close" class="modal-overlay" aria-label="Close"></a>
-        <div class="modal-container">
-            <div class="modal-header">
-            <a href="#close" class="btn btn-clear float-right" aria-label="Close"></a>
-            <div class="modal-title h5">Edit About me</div>
-            </div>
-            <div class="modal-body">
-            <div class="content">
-                <form action="/user/about" method="post">
-                <textarea name="about" id="about" placeholder="Tell others about yourself"
-                            style="width: 100%;" rows="6">{{.about}}</textarea>
-                <div class="text-right">
-                    <input type="hidden" id="token" name="token" value="{{.token}}">
-                    <input type="submit" class="btn active" value="Save">
+        <div class="modal" id="modal-about">
+            <a href="#close" class="modal-overlay" aria-label="Close"></a>
+            <div class="modal-container">
+                <div class="modal-header">
+                <a href="#close" class="btn btn-clear float-right" aria-label="Close"></a>
+                <div class="modal-title h5">Edit About me</div>
                 </div>
-                <p class="text-gray" style="margin-top: 8px;">Max 500 characters</p>
-                </form>
-            </div>
+                <div class="modal-body">
+                <div class="content">
+                    <form action="/user/about" method="post">
+                    <textarea name="about" id="about" placeholder="Tell others about yourself"
+                                style="width: 100%;" rows="6">{{.about}}</textarea>
+                    <div class="text-right">
+                        <input type="hidden" id="token" name="token" value="{{.token}}">
+                        <input type="submit" class="btn active" value="Save">
+                    </div>
+                    <p class="text-gray" style="margin-top: 8px;">Max 500 characters</p>
+                    </form>
+                </div>
+                </div>
             </div>
         </div>
-    </div>
+    {{end}}
 </div>
 
 {{template "footer" .}}
