@@ -70,11 +70,16 @@
         <div class="divider"></div>
         <h3 id="what-is-patching">What is patching and why is it not allowed? <a href="#what-is-patching" class="anchor-link">#</a></h3>
         <p><b>Patching</b> means modifying the binary executable to bypass its protection mechanisms, typically by changing conditional jumps (e.g., replacing <code>JNZ</code> with <code>JZ</code>) or <code>NOP</code>-ing out instructions to skip validation checks entirely.</p>
-        <p>Patching is generally <b>not considered a valid solution</b> for crackmes because:</p>
+        <p>Patching to make the binary print "correct" or "success" is generally <b>not considered a valid solution</b> for crackmes because:</p>
         <ul>
-            <li><b>Crackmes are about understanding algorithms:</b> The core purpose of a crackme is to analyze the validation logic and determine the correct input (password, serial key, etc.) that satisfies the check. Patching bypasses this learning entirely.</li>
+            <li><b>Crackmes are about understanding algorithms:</b> The core purpose of a crackme is to analyze the validation logic and determine the correct input (password, serial key, etc.) that satisfies the check. Patching the final check bypasses this learning entirely.</li>
             <li><b>Limited educational value:</b> While patching demonstrates basic binary modification skills, it doesn't teach you how the algorithm works, how to reverse engineer the key generation logic, or how to write a keygen.</li>
             <li><b>Writeups should help others learn:</b> A writeup that only shows "change byte X to Y" provides little insight compared to one that explains the algorithm and derives the solution mathematically or programmatically.</li>
+        </ul>
+        <p><b>When patching IS valid:</b></p>
+        <ul>
+            <li><b>Anti-patching crackmes:</b> Some crackmes specifically feature self-protection or anti-patching mechanisms as the challenge itself. In these cases, defeating the protection and successfully patching the binary <i>is</i> the intended solution.</li>
+            <li><b>During analysis:</b> Patching the binary during your analysis process is completely fine. For example, bypassing anti-debugging checks, disabling timers, or NOPing out annoying loops to make analysis easier. This is a normal part of reverse engineering. It only becomes invalid when your <i>final solution</i> is just "patch this jump to show the success message."</li>
         </ul>
         <p><b>Note:</b> Even if a crackme author states that patching is allowed, reviewers may still reject patch-only writeups because they make little contribution to the community's learning. If you do patch, consider also explaining the algorithm and providing a keygen alongside your patch.</p>
         <div class="divider"></div>
