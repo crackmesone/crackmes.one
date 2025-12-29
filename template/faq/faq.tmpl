@@ -69,7 +69,7 @@
         <p>Review the <a href="/upload/writeuprules">writeup submission rules</a>, improve your writeup with detailed explanations, and resubmit. Remember: we want others to learn from your solution!</p>
         <div class="divider"></div>
         <h3 id="what-is-patching">What is patching and why is it not allowed? <a href="#what-is-patching" class="anchor-link">#</a></h3>
-        <p><b>Patching</b> means modifying the binary executable to bypass its protection mechanisms, typically by changing conditional jumps (e.g., replacing <code>JNZ</code> with <code>JZ</code>) or <code>NOP</code>-ing out instructions to skip validation checks entirely.</p>
+        <p><b>Patching</b> means modifying the binary executable to bypass its validation algorithm, typically by changing conditional jumps (e.g., replacing <code>JNZ</code> with <code>JZ</code>) or <code>NOP</code>-ing out instructions to skip validation checks entirely.</p>
         <p>Patching to make the binary print "correct" or "success" is generally <b>not considered a valid solution</b> for crackmes because:</p>
         <ul>
             <li><b>Crackmes are about understanding algorithms:</b> The core purpose of a crackme is to analyze the validation logic and determine the correct input (password, serial key, etc.) that satisfies the check. Patching the final check bypasses this learning entirely.</li>
