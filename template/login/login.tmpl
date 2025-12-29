@@ -20,13 +20,15 @@
                     </div>
                     <div class="col-8 col-sm-12">
                         <input class="form-input" type="password" id="password" name="password" placeholder="password">
+                        <a href="/faq#reset-password" style="display: block; text-align: right; margin-top: 0.3rem;">Forgot password?</a>
                     </div>
-                </div>	
-                <input type="hidden" id="token" name="token" value="{{.token}}"> 
-                <input type="submit" value="Login" class="btn active float-right">
+                </div>
+                <input type="hidden" id="token" name="token" value="{{.token}}">
+                <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+                    <a href="/register" class="btn active">Register</a>
+                    <input type="submit" value="Login" class="btn active">
+                </div>
             </form>
-            <a href="/register">Register new account</a>
-            <a href="/faq#reset-password" class="float-right">Forgot password?</a>
         </div>
     </div>
 
