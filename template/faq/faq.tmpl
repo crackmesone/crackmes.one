@@ -68,6 +68,16 @@
         </ul>
         <p>Review the <a href="/upload/writeuprules">writeup submission rules</a>, improve your writeup with detailed explanations, and resubmit. Remember: we want others to learn from your solution!</p>
         <div class="divider"></div>
+        <h3 id="what-is-patching">What is patching and why is it not allowed? <a href="#what-is-patching" class="anchor-link">#</a></h3>
+        <p><b>Patching</b> means modifying the binary executable to bypass its protection mechanisms, typically by changing conditional jumps (e.g., replacing <code>JNZ</code> with <code>JZ</code>) or <code>NOP</code>-ing out instructions to skip validation checks entirely.</p>
+        <p>Patching is generally <b>not considered a valid solution</b> for crackmes because:</p>
+        <ul>
+            <li><b>Crackmes are about understanding algorithms:</b> The core purpose of a crackme is to analyze the validation logic and determine the correct input (password, serial key, etc.) that satisfies the check. Patching bypasses this learning entirely.</li>
+            <li><b>Limited educational value:</b> While patching demonstrates basic binary modification skills, it doesn't teach you how the algorithm works, how to reverse engineer the key generation logic, or how to write a keygen.</li>
+            <li><b>Writeups should help others learn:</b> A writeup that only shows "change byte X to Y" provides little insight compared to one that explains the algorithm and derives the solution mathematically or programmatically.</li>
+        </ul>
+        <p><b>Note:</b> Even if a crackme author states that patching is allowed, reviewers may still reject patch-only writeups because they make little contribution to the community's learning. If you do patch, consider also explaining the algorithm and providing a keygen alongside your patch.</p>
+        <div class="divider"></div>
         <h3 id="submit-crackme">How do I submit a crackme? <a href="#submit-crackme" class="anchor-link">#</a></h3>
         <p>To submit a crackme, you must first login or register. Then go to the <a href="/upload/crackme">Upload Crackme</a> page. Make sure to read the <a href="/upload/crackmerules">crackme submission rules</a> before uploading to ensure your submission meets the requirements.</p>
         <div class="divider"></div>
