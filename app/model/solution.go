@@ -104,7 +104,7 @@ func SolutionsByUser(username string) ([]Solution, error) {
 
 	if database.CheckConnection() {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("solution")
-		opts := options.Find().SetSort(bson.D{{"created_at", -1}})
+		opts := options.Find().SetSort(bson.D{{"created_at", -1}}).SetLimit(50)
 
 		// Validate the object id
 		cursor, err = collection.Find(database.Ctx, bson.M{"author": username, "visible": true}, opts)
