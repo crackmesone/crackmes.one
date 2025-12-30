@@ -14,16 +14,18 @@ import (
 // Crackme
 // *****************************************************************************
 
-// Crackme table contains the information for each note
+// Solution table contains the information for each solution/writeup
 type Solution struct {
-	ObjectId  primitive.ObjectID `bson:"_id,omitempty"`
-	HexId     string             `bson:"hexid,omitempty"`
-	Info      string             `bson:"info"`
-	CrackmeId primitive.ObjectID `bson:"crackmeid,omitempty"`
-	CreatedAt time.Time          `bson:"created_at"`
-	Author    string             `bson:"author,omitempty"`
-	Visible   bool               `bson:"visible"`
-	Deleted   bool               `bson:"deleted"`
+	ObjectId      primitive.ObjectID `bson:"_id,omitempty"`
+	HexId         string             `bson:"hexid,omitempty"`
+	Info          string             `bson:"info"`
+	CrackmeId     primitive.ObjectID `bson:"crackmeid,omitempty"`
+	CrackmeHexId  string             `bson:"crackmehexid,omitempty"`
+	CrackmeName   string             `bson:"crackmename,omitempty"`
+	CreatedAt     time.Time          `bson:"created_at"`
+	Author        string             `bson:"author,omitempty"`
+	Visible       bool               `bson:"visible"`
+	Deleted       bool               `bson:"deleted"`
 }
 
 type SolutionExtended struct {
@@ -150,23 +152,28 @@ func SolutionsByCrackme(crackme primitive.ObjectID) ([]Solution, error) {
 	return result, err
 }
 
-// NoteCreate creates a note
+// SolutionCreate creates a solution
 func SolutionCreate(info, username, crackmehexid string) error {
 	var err error
-	crackme, _ := CrackmeByHexId(crackmehexid)
+	crackme, err := CrackmeByHexId(crackmehexid)
+	if err != nil {
+		return standardizeError(err)
+	}
 
 	if database.CheckConnection() {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("solution")
 		objId := primitive.NewObjectID()
 		solution := &Solution{
-			ObjectId:  objId,
-			HexId:     objId.Hex(),
-			Info:      info,
-			CrackmeId: crackme.ObjectId,
-			CreatedAt: time.Now(),
-			Author:    username,
-			Visible:   false,
-			Deleted:   false,
+			ObjectId:     objId,
+			HexId:        objId.Hex(),
+			Info:         info,
+			CrackmeId:    crackme.ObjectId,
+			CrackmeHexId: crackme.HexId,
+			CrackmeName:  crackme.Name,
+			CreatedAt:    time.Now(),
+			Author:       username,
+			Visible:      false,
+			Deleted:      false,
 		}
 		_, err = collection.InsertOne(database.Ctx, solution)
 	} else {

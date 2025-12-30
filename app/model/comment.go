@@ -15,12 +15,13 @@ import (
 // Comment
 // *****************************************************************************
 
-// Comment table contains the information for each note
+// Comment table contains the information for each comment
 type Comment struct {
 	ObjectId     primitive.ObjectID `bson:"_id,omitempty"`
 	Content      string             `bson:"info,omitempty"`
 	Author       string             `bson:"author,omitempty"`
 	CrackMeHexId string             `bson:"crackmehexid,omitempty"`
+	CrackmeName  string             `bson:"crackmename,omitempty"`
 	CreatedAt    time.Time          `bson:"created_at"`
 	Visible      bool               `bson:"visible"`
 	Deleted      bool               `bson:"deleted"`
@@ -87,6 +88,12 @@ func CommentsByCrackMe(crackmehexid string) ([]Comment, error) {
 func CommentCreate(content, username, crackmehexid string) error {
 	var err error
 
+	// Fetch crackme to get its name
+	crackme, err := CrackmeByHexId(crackmehexid)
+	if err != nil {
+		return standardizeError(err)
+	}
+
 	if database.CheckConnection() {
 		objId := primitive.NewObjectID()
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("comment")
@@ -95,6 +102,7 @@ func CommentCreate(content, username, crackmehexid string) error {
 			Content:      content,
 			Author:       username,
 			CrackMeHexId: crackmehexid,
+			CrackmeName:  crackme.Name,
 			CreatedAt:    time.Now(),
 			Visible:      true,
 			Deleted:      false,
