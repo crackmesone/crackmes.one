@@ -58,7 +58,7 @@ func CommentsByUser(name string) ([]Comment, error) {
 	if database.CheckConnection() {
 		collection := database.Mongo.Database(database.ReadConfig().MongoDB.Database).Collection("comment")
 		// Validate the object id
-		opts := options.Find().SetSort(bson.D{{"created_at", -1}}).SetLimit(50)
+		opts := options.Find().SetSort(bson.D{{"created_at", -1}})
 		cursor, err = collection.Find(database.Ctx, bson.M{"author": name, "visible": true}, opts)
 		err = cursor.All(database.Ctx, &result)
 	} else {
