@@ -67,27 +67,6 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    nbCrackmes, err := model.CountCrackmesByUser(actualUsername)
-    if err != nil {
-        log.Println(err)
-        Error500(w, r)
-        return
-    }
-
-    nbSolutions, err := model.CountSolutionsByUser(actualUsername)
-    if err != nil {
-        log.Println(err)
-        Error500(w, r)
-        return
-    }
-
-    nbComments, err := model.CountCommentsByUser(actualUsername)
-    if err != nil {
-        log.Println(err)
-        Error500(w, r)
-        return
-    }
-
     solutions, err := model.SolutionsByUser(actualUsername)
     if err != nil {
         log.Println(err)
@@ -102,18 +81,17 @@ func UserGET(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    solutionsext := make([]model.SolutionExtended, len(solutions))
+    // Use len() instead of separate count queries
+    nbCrackmes := len(crackmes)
+    nbSolutions := len(solutions)
+    nbComments := len(comments)
 
+    // Build extended solutions using stored crackme name (no N+1 queries)
+    solutionsext := make([]model.SolutionExtended, len(solutions))
     for i := range solutions {
         solutionsext[i].Solution = &solutions[i]
-        solutionsext[i].Crackmeshexid = (&solutions[i]).CrackmeId.Hex()
-        tmpcrackme, err := model.CrackmeByHexId(solutionsext[i].Crackmeshexid)
-        if err != nil {
-            log.Println(err)
-            Error500(w, r)
-            return
-        }
-        solutionsext[i].Crackmename = tmpcrackme.Name
+        solutionsext[i].Crackmeshexid = solutions[i].CrackmeHexId
+        solutionsext[i].Crackmename = solutions[i].CrackmeName
     }
 
     // NbComments and NbSolutions for each CRACKME are stored in the database

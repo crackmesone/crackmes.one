@@ -109,17 +109,17 @@
             <table class="table table-striped">
                 <thead>
                     <tr style="text-align: center;">
-                        <th style="width: 70%;">Comment</th>
+                        <th style="width: 30%;">Crackme</th>
+                        <th style="width: 50%;">Comment</th>
                         <th style="width: 20%;">Date</th>
-                        <th style="width: 10%;">Link</th>
                     </tr>
                 </thead>
                 <tbody id="content-list">
                     {{range $n := .comments}}
                     <tr class="text-center">
+                        <td><a href="/crackme/{{.CrackMeHexId}}">{{.CrackmeName}}</a></td>
                         <td> <span style="white-space: pre-line">{{.Content}}</span> </td>
                         <td>{{.CreatedAt | PRETTYTIME}}</td>
-                        <td> <a href="/crackme/{{.CrackMeHexId}}">==></a> </td>
                     </tr>
                     {{end}}
                 </tbody>
